@@ -1,4 +1,3 @@
-# retinasim
-RetinaSim
+# RetinaSim
 
 #### Retinal layer and vasculature simulaiton
