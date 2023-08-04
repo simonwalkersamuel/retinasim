@@ -2,7 +2,11 @@ import numpy as np
 arr = np.asarray
 from matplotlib import pyplot as plt
 from mpl_toolkits import mplot3d
-from vessel_sim import geometry
+from retinasim import geometry
+
+"""
+Library of functions to create 3D fovea structures using a split Gaussian model
+"""
 
 def gauss(x,sigma,mu,A):
     g = np.exp(-np.square(x-mu)/np.square(sigma))
@@ -31,6 +35,10 @@ def plot_fovea(coords, show=True, ax=None, normals=None):
     return ax
     
 def ensure_face_direction(face,verts,direction=1):
+    """
+    Make sure mesh faces point in a consistent direction
+    """
+
     ndir = np.cross(verts[1]-verts[0],verts[2]-verts[0])
     if (ndir[2]<0 and direction>=0) or (ndir[2]>0 and direction<0):
         face[[0,2]] = face[[2,0]]
@@ -287,16 +295,11 @@ def fovea_projection_raised(n=1001,rng=[-3000,3000],dr=100.,fw=500.,sd1=400., sd
     a2 = rhs_disp
     g2 = gauss(x,sd2,flat_width/2.,dr) + a2
     v2 = g2.max() # g2[x>flat_width/2.][0]
-    
-    #breakpoint()
 
-    #res = np.concatenate([g1[:int(n/2)],g2[int(n/2):]])
     res = np.concatenate([g1[x<=0],g2[x>0]])
 
     nl = len(res[((-flat_width/2)<x) & (x<(flat_width/2))])
     res[((-flat_width/2)<x) & (x<(flat_width/2))] = np.linspace(v1,v2,nl)
-    
-    #print(sd1,sd2,sdl,sdr,hr1,hr2)
     
     return x,res    
     
@@ -343,6 +346,10 @@ def align_with_normal(coords, normal):
     return coords
     
 def fovea_test():
+  
+    """
+    Test fovea structure
+    """
 
     #nr,nproj,rng = 50, 101, 10000.
     nr,nproj,rng = 50, 101, 10000.
@@ -380,7 +387,6 @@ def fovea_test():
         o3d.visualization.draw_geometries([mesh],mesh_show_wireframe=True) #,mesh_show_back_face=True)
     
         return
-    #breakpoint()
     
     import matplotlib.tri as mtri
     triang = mtri.Triangulation(coords[:,0], coords[:,1], triangles=faces)
@@ -390,6 +396,10 @@ def fovea_test():
     plt.show()
 
 def on_test():
+
+    """
+    Test optic nerve structure
+    """
 
     import open3d as o3d
 
@@ -506,19 +516,6 @@ def hole_test():
 
 if __name__=='__main__':
 
-    if True:
-        fovea_test()
-    else:
-        on_test()
-    
-    #plt.plot(coords[:nproj,2])
-    
-    if False:
-        nrm = np.asarray([0.5,0.5,0.5])
-        nrm = nrm / np.linalg.norm(nrm)
-        coords = align_with_normal(coords,nrm)
-            
-    #ax = plot_fovea(coords,show=True)
-    #plot_fovea(coords2,ax=ax,show=False)
-    #plot_fovea(coords3,ax=ax)
+    fovea_test()
+    on_test()
     
