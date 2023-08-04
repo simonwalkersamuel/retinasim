@@ -1,2 +1,2 @@
 # retinasim
-retinasim
+RetinaSim
