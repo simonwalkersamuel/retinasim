@@ -9,6 +9,9 @@ Emmeline Brown, Andrew Guy, Natalie Holroyd, Paul Sweeney, Lucie Gourmet, Hannah
 
 bioRxiv 2023.07.10.548427; doi: https://doi.org/10.1101/2023.07.10.548427
 
+## License
+This project is licensed under the GNU Affero General Public License v3.0 (AGPL-3.0).
+
 ## Installation
 
 RetinaSim relies on three separate libraries:
@@ -32,6 +35,9 @@ RetinaSim is under development and has so far only been installed and tested on 
 3) Switch to the retinasim branch of the Reanimate repository
 4) Cd to the retinasim directory (created above) and edit the config.py directory. REANIMATE_DIR should be changed to the location of the cloned repository (with an additional 'Reanimate' directory appended to the end - e.g. /VIRTUAL_ENV_PATH/site-packages/Reanimate/Reanimate)
 5) Also edit REANIMATE_TMP_DIR_LOC to correpsond to a folder for temporary storage results during processing (deleted at completion)
+
+### Installing Vascular.Networks
+1) Follow instructions on 
 
 ## Link to data (Dropbox)...
 ## Tutorial...
