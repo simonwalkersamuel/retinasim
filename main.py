@@ -14,7 +14,7 @@ from numpy import asarray as arr
 from tqdm import trange, tqdm
 
 from retinasim.capillary_bed import direct_arterial_venous_connection, voronoi_capillary_bed, remove_arteriole  
-from retinasim.utility import join_feeding_vessels, make_dir, remove_endpoint_nodes, remove_all_endpoints, identify_inlet_outlet, reanimate_sim, filter_graph_by_radius, make_dir
+from retinasim.utility import join_feeding_vessels, make_dir, remove_endpoint_nodes, remove_all_endpoints, identify_inlet_outlet, reanimate_sim, filter_graph_by_radius, make_dir, create_directories
 from retinasim.eye import Eye
 from retinasim import lsystem, inject, vascular, sine_interpolate
 from retinasim.scripts.create_enface import create_enface
@@ -22,42 +22,12 @@ from retinasim.scripts.create_surface import create_surface
 from retinasim.scripts.project_graph_to_surface import project_to_surface
 from retinasim.embed import embed
 from retinasim.vascular import run_sim         
-
-def create_directories(parent_path,name,overwrite_existing=False):
-
-    """ 
-    Helper function to create data output directories
-    DIRECTORIES
-    - parent
-      - lsystem
-      - cco
-      - ffa
-      - embed
-      - network
-      - surface 
-    """
-
-    if name!='':
-        path = join(parent_path,name)
-    else:
-        path = parent_path
-    make_dir(path,overwrite_existing=overwrite_existing)
-    lpath = join(path,'lsystem')
-    make_dir(lpath)
-    cco_path = join(path,'cco')
-    make_dir(cco_path)
-    dataPath = lpath 
-    make_dir(dataPath)
-    surfacePath = join(path,'surface') 
-    make_dir(surfacePath)
-    embedPath = join(path,'embed')
-    make_dir(embedPath)
-    concPath = join(path,'ffa') #join(lpath,'graph')
-    make_dir(concPath)
-    
-    return lpath, cco_path, dataPath, surfacePath, embedPath, concPath
     
 def generate_lsystem(opath=None,lpath=None,gfile=None,screen_grab=True,eye=None):
+
+    """
+    Create L-system seed networks (arterial and venous, with upper and lower retina segments created separately)
+    """
 
     lsystem.simulate_cco_seed(prefix='',params=None,max_cycles=5,path=lpath,plot=False,dataPath=opath,eye=eye)
     mfiles = ['retina_artery_lower.am','retina_vein_lower.am','retina_artery_upper.am','retina_vein_upper.am']
@@ -88,7 +58,7 @@ def vascular_config(Actions="coarse;macula;resolve",FrozenFactor=0,eye=None,cfil
 
     """
     Run vascular on upper and lower sections separately
-    opath is usually the CCO directory
+    The output path (opath) the cco directory by default
     """
 
     # Edit config files
@@ -106,19 +76,22 @@ def vascular_config(Actions="coarse;macula;resolve",FrozenFactor=0,eye=None,cfil
     else:
         vcfg.params['Domain']['MaculaRadius'] = 500.
     vcfg.params['Major']['PreSpacing'] = 5000.
+    # Endpoint spacing used for the coursest scale
     vcfg.params['Major']['SpacingMax'] = 3000.
-    vcfg.params['Major']['SpacingMin'] = 150.
+    # Endpoint spacing used for the finest scale (150um by default; change to 500 for faster testing)
+    vcfg.params['Major']['SpacingMin'] = 500. #150.
+    # Number of length scales to model (spread across spacing max and min range above)
     vcfg.params['Major']['Refinements'] = 5
     vcfg.params['Major']['FrozenFactor'] = FrozenFactor
     vcfg.params["Actions"] = Actions
-    vcfg.params['Macula']['SpacingMax'] = vcfg.params['Domain']['MaculaRadius'] / 2 # vcfg.params['Major']['SpacingMin'] #vcfg.params['Domain']['MaculaRadius'] / 2   # vcfg.params['Major']['SpacingMin']*4 #*4 #*4 #
+    # Macula resolutions
+    vcfg.params['Macula']['SpacingMax'] = vcfg.params['Domain']['MaculaRadius'] / 2
     vcfg.params['Macula']['SpacingMin'] = 150. #vcfg.params['Major']['SpacingMin']
     vcfg.params['Macula']['Refinements'] = 3
     vcfg.params['Macula']['FlowFactor'] = FlowFactor
     vcfg.params['Optimizer']['Frozen'] = Frozen
     vcfg.params['Optimizer']['TargetStep'] = TargetStep
     vcfg.params['Optimizer']['MinTerminalLength'] = MinTerminalLength
-    #vcfg.params['Domain']['SemiCircle'] = SemiCircle
     vcfg.quad = quad
     
     print(f'Written param file: {cfile}')
@@ -279,14 +252,14 @@ def flow_ordering(graph,rfile=None,cco_path=None,run_reanimate=True,arterial_pre
     ### Run crawl algorithm to get flow ordering ###
     # Crawl downstream from inlet artery
     ofilename = 'retina_arterial_crawl.am'
-    graph = retina_inject.crawl(graph,proj_path=cco_path,calculate_conc=False,plot=False,arteries_only=True,ofilename=ofilename)
+    graph = inject.crawl(graph,proj_path=cco_path,calculate_conc=False,plot=False,arteries_only=True,ofilename=ofilename)
     graph.write(join(cco_path,ofilename))    
     g_art_crawl = spatialgraph.SpatialGraph()
     g_art_crawl.read(join(cco_path,ofilename))
     # Crawl upstream from oulet vein
     ofilename = 'retina_venous_crawl.am'
     first_branch_index = g_art_crawl.get_data(name='Branch').max() + 1
-    g_vein_crawl = retina_inject.crawl(graph,proj_path=cco_path,calculate_conc=False,plot=False,downstream=False,veins_only=True,ofilename='retina_venous_crawl.am',first_branch_index=first_branch_index)  
+    g_vein_crawl = inject.crawl(graph,proj_path=cco_path,calculate_conc=False,plot=False,downstream=False,veins_only=True,ofilename='retina_venous_crawl.am',first_branch_index=first_branch_index)  
     # Combine arterial (downstream) and venous (upstream) crawl results
     art_branch = g_art_crawl.get_data(name='Branch')
     art_order = g_art_crawl.get_data(name='Order')
@@ -366,12 +339,12 @@ def main(args):
         
         # Re-run REANIMATE (only if not adding voronoi capillaries...)
         # Write .dat file to fixed location
-        if direct_conn:
+        if args.direct_conn:
             graph = reanimate_sim(graph,opath=cco_path,ofile=cap_file_r_c,a_pressure=args.arterial_pressure,v_pressure=args.venous_pressure)
     else:
         cap_file_r_c = cap_file_r
         
-    if create_capillaries and not direct_conn:       
+    if args.create_capillaries and not args.direct_conn:       
         # Remove existing capillaries
         vt = graph.get_data('VesselType')
         epi = graph.edgepoint_edge_indices()
@@ -385,7 +358,6 @@ def main(args):
         cap_file = os.path.join(cco_path,cap_file_r_c.replace('.am','_vorcap.am'))
                     
         graph.write(cap_file)
-        #breakpoint()
     
     ### Screen grabs ###
     domain = None
@@ -395,14 +367,14 @@ def main(args):
     vis.screen_grab(join(cco_path,'pressure.png'))
     vis.destroy_window()
     
-    # Enface image #
+    # Create enface image
     if args.create_enface_image:
         xdim = 500*3
         ydim = 500*3
         view_size = arr([6000.,6000.])*3
         create_enface(opath=cco_path,graph=graph,xdim=xdim,ydim=ydim,view_size=view_size,eye=eye,plot=False,figsize=[7,7],exclude_capillaries=True)
             
-    ### Create surface ###
+    ### Create retina layer surfaces ###
     if args.create_surfaces:
         ofile = join(surfacePath,'retina_surface.ply')
         plot_file = ofile.replace('.ply','_profile.png')

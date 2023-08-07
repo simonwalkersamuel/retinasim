@@ -11,11 +11,41 @@ import subprocess
 from retinasim import geometry
 from retinasim.eye import Eye
 from pymira.spatialgraph import update_array_index,delete_vertices
+from retinasim.config import *
 
-# REANIMATE (flow estimation) directories
-REANIMATE_DIR = "/PATH/TO/REANIMATE/DISTRIBUTION" 
-REANIMATE_DATA_FILENAME = "/PATH/TO/REANIMATE/DAT_FILE.dat"
-REANIMATE_TMP_DIR_LOC = "/PATH/TO/REANIMATE/TEMP/DIRECTORY"
+def create_directories(parent_path,name,overwrite_existing=False):
+
+    """ 
+    Helper function to create data output directories
+    DIRECTORIES
+    - parent
+      - lsystem
+      - cco
+      - ffa
+      - embed
+      - network
+      - surface 
+    """
+
+    if name!='':
+        path = join(parent_path,name)
+    else:
+        path = parent_path
+    make_dir(path,overwrite_existing=overwrite_existing)
+    lpath = join(path,'lsystem')
+    make_dir(lpath)
+    cco_path = join(path,'cco')
+    make_dir(cco_path)
+    dataPath = lpath 
+    make_dir(dataPath)
+    surfacePath = join(path,'surface') 
+    make_dir(surfacePath)
+    embedPath = join(path,'embed')
+    make_dir(embedPath)
+    concPath = join(path,'ffa') #join(lpath,'graph')
+    make_dir(concPath)
+    
+    return lpath, cco_path, dataPath, surfacePath, embedPath, concPath
 
 def test_midline_collision(eye,coords,edges,extent):
     x0 = eye.optic_disc_centre
