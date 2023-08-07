@@ -45,7 +45,7 @@ RetinaSim is under development and has so far only been installed and tested on 
 1) Follow instructions on https://github.com/AndrewAGuy/vascular-networks
 
 ## Installing Pymira
-1) Clone https://github.com/CABI-SWS/pymira
+1) Clone https://github.com/CABI-SWS/pymira into the site-packages folder in the virtual environment
 
 ## Running RetinaSim
 From a command line interface, activate the virtual environment and cd to site-packages/retinasim.
