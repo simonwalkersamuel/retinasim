@@ -1387,7 +1387,7 @@ class RetinaSurface():
         
     def write_surface_mesh(self, mesh, ofile=''):
         o3d.io.write_triangle_mesh(ofile,mesh)
-        gz
+        
     def load_surface(self,filename):
         import open3d as o3d
         return o3d.io.read_triangle_mesh(filename)

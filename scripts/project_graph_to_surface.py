@@ -134,8 +134,8 @@ def project_to_surface(graph=None,filename=None,vfile=None,efile=None,mesh_file_
     graph.set_data(nodes,name='VertexCoordinates')
     graph.set_data(points,name='EdgePointCoordinates')
     
-    ofile = filename.replace('.am','_plexi.am')
-    graph.write(ofile)
+    #ofile = filename.replace('.am','_plexi.am')
+    #graph.write(ofile)
     
     # Filter vessel radii
     if filter:
@@ -264,11 +264,13 @@ def project_to_surface(graph=None,filename=None,vfile=None,efile=None,mesh_file_
         gmesh_vein = tp.cylinders_combined
         ofile2 = ofile.replace('.am','_vein.ply')
         o3d.io.write_triangle_mesh(ofile2,gmesh_vein)
-        if True: # Switch off if capillaries not required as separate mesh
-            tp = graph.plot_graph(show=False,block=False,min_radius=5.,edge_filter=vtypeEdge==2,cyl_res=5,radius_scale=1)
-            gmesh_cap = tp.cylinders_combined
-            ofile2 = ofile.replace('.am','_capillary2.ply')
-            o3d.io.write_triangle_mesh(ofile2,gmesh_cap)
+        
+        #if True: # Switch off if capillaries not required as separate mesh
+        #    tp = graph.plot_graph(show=False,block=False,min_radius=5.,edge_filter=vtypeEdge==2,cyl_res=5,radius_scale=1)
+        #    gmesh_cap = tp.cylinders_combined
+        #    ofile2 = ofile.replace('.am','_capillary2.ply')
+        #    o3d.io.write_triangle_mesh(ofile2,gmesh_cap)
+        
         tp.destroy_window()
         
     return graph

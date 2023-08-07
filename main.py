@@ -378,7 +378,8 @@ def main(args):
     if args.create_surfaces:
         ofile = join(surfacePath,'retina_surface.ply')
         plot_file = ofile.replace('.ply','_profile.png')
-        create_surface(path=None,ofile=ofile,plot=True,plot_file=plot_file,add_simplex_noise=True,eye=eye,project=args.project_surface_to_sphere)
+        path = join(cco_path,'graph')
+        create_surface(path=path,ofile=ofile,plot=True,plot_file=plot_file,add_simplex_noise=True,eye=eye,project=args.project_surface_to_sphere)
     
     # Project vessels onto surface
     if args.project:
@@ -396,7 +397,7 @@ def main(args):
         # Volume pixel dimensions
         dim = [500*2,500*2,1500]
 
-        embedObj = embed(graph=graph,eye=eye,filename=filename,domain=domain,dim=dim,surface_dir=surfacePath,output_path=embedPath,theta=theta,phi=phi,chi=chi,write=False)              
+        embedObj = embed(graph=graph,eye=eye,filename=None,domain=domain,dim=dim,surface_dir=surfacePath,output_path=embedPath,theta=theta,phi=phi,chi=chi,write=False)              
         
         # Create OCT-A-like enface image from embedded vessel data
         vessels = embedObj.vessel_grid
@@ -437,12 +438,12 @@ def create_parser():
     parser.add_argument('--nart', type=int, default=False, help='Number of arterioles to occlude in diabetes simulation (default=False)')
     parser.add_argument('--create_capillaries', type=bool, default=True, help='Add capillary structures (default=True)')
     parser.add_argument('--direct_conn', type=bool, default=True, help='If creating capillary structures, directly connect arterioles to venuoles (alternatively, create voronoi capillary bed) (default=True)')
-    parser.add_argument('--simulate_injection', type=bool, default=True, help='Simulate fluorescein injection (default=True)')
+    parser.add_argument('--simulate_injection', type=bool, default=False, help='Simulate fluorescein injection (default=False)')
     parser.add_argument('--create_new_geometry', type=bool, default=True, help='Generate new eye geoemtry values (otherwise load existing) (default=True)')
     parser.add_argument('--create_surfaces', type=bool, default=True, help='Create new retina surface layer geometry (otherwise use existing) (default=True)')
     parser.add_argument('--project_surface_to_sphere', type=bool, default=True, help='Project surfaces to spherical geometry (default=True)')
     parser.add_argument('--project', type=bool, default=True, help='Project onto spherical geometry (default=True)')
-    parser.add_argument('--embed_volume', type=bool, default=True, help='Embed simulation into 3D pixel volume (default=True)')
+    parser.add_argument('--embed_volume', type=bool, default=False, help='Embed simulation into 3D pixel volume (default=False)')
     parser.add_argument('--create_enface_image', type=bool, default=True, help='Create an OCT-A-style enface image (default=True)')
     parser.add_argument('--add_wriggle', type=bool, default=True, help='Overlay sinusoidal tortuosity to vessel paths (default=True)')
     parser.add_argument('--win_width', type=int, default=6000, help='Window width for screen grabs to file (default=6000 pixels)')

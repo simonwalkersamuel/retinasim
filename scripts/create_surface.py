@@ -26,6 +26,7 @@ def create_surface(path=None,ofile=None,efile=None,mesh_file_format='ply',plot=F
     # Use simulation domain
     domain = eye.domain.astype('float')
     centre = np.mean(domain,axis=1)
+    old_centre = eye.occular_centre
     eye.occular_centre[0:2] = centre[0:2]
 
     # Extend domain to accomodate all of network
@@ -41,3 +42,5 @@ def create_surface(path=None,ofile=None,efile=None,mesh_file_format='ply',plot=F
     domain_mode,fill_mode = 'circular','rectangular'
 
     rs.create_retina_surface(plot=plot,nr=nr,nproj=nproj,n=n,rng_nsd=rng_nsd,vessel_depth=vessel_depth,simulate_macula=simulate_macula,simulate_optic_nerve=simulate_optic_nerve,add_simplex_noise=add_simplex_noise,project=project,plot_file=plot_file,ofile=ofile,regrid=regrid,domain_mode=domain_mode,fill_mode=fill_mode)
+    
+    eye.occular_centre = old_centre

@@ -906,26 +906,21 @@ if __name__=='__main__':
 
         recon_only = True
         delete_previous = True
-        #recon_times = [0.,1.,2.,3.,4.,5.,10.,60.,3.*60.,5*60.,7*60.,10.*60.,15.*60]
-        #recon_times = [0.,0.1,0.2,0.5,1.,2.,3.,4.,5.,10.,20.,30.,60.,2.*60.,3*60.,5*60.,7*60.,10.*60.,15.*60,20.*60.]
-        recon_times = np.linspace(0.,10.*60,int(10.*60./0.1))
+        duration = 10.*60. # seconds
+        dt = 1. # seconds
+        nimage = int(duration/0.1)
+        recon_times = np.linspace(0.,duration,nimage)
         movie_naming = True
         
-        #path = '/mnt/data2/retinasim/cco_batch_v1/sim00000003/cco'
-        path = r'C:\Users\simon\Desktop\cco'
-        gfile = 'retina_cco_reanimate6.am'
+        path = r'/OUTPUT/PATH/'
+        gfile = 'GRAPH_FILE.am'
         conc_dir = 'ffa'
-        
         graph = None
-        
-        #geometry_file = '/mnt/data2/retinasim/cco_batch_v1/sim00000003/lsystem/retina_geometry.p'
         eye = Eye()
-        #eye.load(geometry_file)    
 
         if not recon_only:
             graph = crawl(name=name,proj_path=path,fname=gfile,calculate_conc=True,conc_dir=conc_dir)
 
-        #conc_dir = '/mnt/data2/retinasim/cco_batch_v1/sim00000003/ffa'
         conc_dir = join(path,'ffa')
         cmap_range = [0.,0.05]
         recon_conc(graph=graph,gfile=join(path,gfile),path=path,conc_dir=join(path,conc_dir),eye=eye,recon_times=recon_times,movie_naming=movie_naming,cmap_range=cmap_range)
