@@ -1,6 +1,9 @@
 # RetinaSim
 
 **Retinal layer and vasculature simulation**
+
+<center><img src="https://github.com/simonwalkersamuel/retinasim/assets/21674318/9ada423d-edcf-4df8-9d9d-e35c9b7150f0)" width="300" height="300" /></center>
+
 ## Paper
 
 Physics-informed deep generative learning for quantitative assessment of the retina
