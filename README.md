@@ -24,7 +24,7 @@ RetinaSim is under development and has so far only been installed and tested on 
 ### Installing RetinaSim
 
 1) Install anaconda and create a virtual environment containing python 3.8.
-2) Start the virtual environment and enter the site-packages folder
+2) Start the virtual environment and enter the `site-packages` folder
 3) Clone this repository (by default will be cloned into a folder named retinasim)
 4) Install dependencies in requirements.txt usng pip
 
@@ -33,11 +33,17 @@ RetinaSim is under development and has so far only been installed and tested on 
 1) In the virtual environment, cd to the site-packages folder
 2) Clone https://github.com/psweens/Reanimate/tree/retinasim/Reanimate
 3) Switch to the retinasim branch of the Reanimate repository
-4) Cd to the retinasim directory (created above) and edit the config.py directory. REANIMATE_DIR should be changed to the location of the cloned repository (with an additional 'Reanimate' directory appended to the end - e.g. /VIRTUAL_ENV_PATH/site-packages/Reanimate/Reanimate)
+4) Cd to the retinasim directory (created above) and edit the `config.py` directory. REANIMATE_DIR should be changed to the location of the cloned repository (with an additional 'Reanimate' directory appended to the end - e.g. /VIRTUAL_ENV_PATH/site-packages/Reanimate/Reanimate)
 5) Also edit REANIMATE_TMP_DIR_LOC to correpsond to a folder for temporary storage results during processing (deleted at completion)
 
 ### Installing Vascular.Networks
-1) Follow instructions on 
+1) Follow instructions on https://github.com/AndrewAGuy/vascular-networks
 
-## Link to data (Dropbox)...
-## Tutorial...
+## Running RetinaSim
+From a command line interface, activate the virtual environment and cd to site-packages/retinasim.
+
+Enter `python main.py /OUTPUT/DIRECTORY/` for default operation
+
+## Link to data
+Example simulation data referenced in the paper can be found here:
+
