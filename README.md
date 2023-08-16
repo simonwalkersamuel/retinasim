@@ -53,14 +53,13 @@ pip install -r requirements.txt
 
 ### Installing Reanimate
 
-1) Cd to the Reanimate directory in this repo and compile the code (first making sure cmake is installed):
+1) Change directory to the Reanimate directory in this repo and compile the code (first making sure cmake is installed):
 ```
 cd Reanimate
 cmake .
 make
 ```
-3) Cd to the retinasim directory (created above) and edit the `config.py` directory. REANIMATE_DIR should be changed to the location of the cloned repository (with an additional 'Reanimate' directory appended to the end - e.g. /VIRTUAL_ENV_PATH/site-packages/Reanimate/Reanimate)
-4) Also edit REANIMATE_TMP_DIR_LOC to correpsond to a folder for temporary storage results during processing (deleted at completion)
+2) Change directory back to the retinasim directory and edit the `config.py` directory. Edit REANIMATE_TMP_DIR_LOC to correspond to a folder for temporary storage results during processing (deleted at completion).
 
 ### Installing RetinaGen and Vascular.Networks
 1) Follow instructions in the RetinaGen submodule (requires the .NET v6.0 SDK to be installed)
