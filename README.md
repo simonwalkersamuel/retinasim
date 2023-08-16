@@ -28,10 +28,21 @@ RetinaSim is under development and has so far only been installed and tested on 
 
 ### Installing RetinaSim
 
-1) Install anaconda and create a virtual environment containing python 3.8.
-2) Start the virtual environment and enter the `site-packages` folder
-3) Clone this repository (by default will be cloned into a folder named retinasim)
-4) Install dependencies in requirements.txt using pip:
+1) Install anaconda (https://docs.anaconda.com/free/anaconda/install/linux/)
+2) Create a virtual environment containing python 3.8.
+```
+conda create --name retinasim python=3.8
+```
+3) Start the virtual environment and enter the `site-packages` folder
+```
+conda activate retinasim
+cd lib/python3.8/site-packages
+```
+4) Clone this repository
+```
+git clone git@github.com:simonwalkersamuel/retinasim.git
+```
+5) Install dependencies using pip:
 ```
 pip install -r requirements.txt
 ```
@@ -44,8 +55,8 @@ pip install -r requirements.txt
 cmake .
 make
 ```
-5) Cd to the retinasim directory (created above) and edit the `config.py` directory. REANIMATE_DIR should be changed to the location of the cloned repository (with an additional 'Reanimate' directory appended to the end - e.g. /VIRTUAL_ENV_PATH/site-packages/Reanimate/Reanimate)
-6) Also edit REANIMATE_TMP_DIR_LOC to correpsond to a folder for temporary storage results during processing (deleted at completion)
+3) Cd to the retinasim directory (created above) and edit the `config.py` directory. REANIMATE_DIR should be changed to the location of the cloned repository (with an additional 'Reanimate' directory appended to the end - e.g. /VIRTUAL_ENV_PATH/site-packages/Reanimate/Reanimate)
+4) Also edit REANIMATE_TMP_DIR_LOC to correpsond to a folder for temporary storage results during processing (deleted at completion)
 
 ### Installing RetinaGen and Vascular.Networks
 1) Follow instructions in the RetinaGen submodule (requires the .NET v6.0 SDK to be installed)
