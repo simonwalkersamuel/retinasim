@@ -31,7 +31,7 @@ RetinaSim is under development and has so far only been installed and tested on 
 1) Install anaconda and create a virtual environment containing python 3.8.
 2) Start the virtual environment and enter the `site-packages` folder
 3) Clone this repository (by default will be cloned into a folder named retinasim)
-4) Install dependencies in requirements.txt usng pip:
+4) Install dependencies in requirements.txt using pip:
 ```
 pip install -r requirements.txt
 ```
