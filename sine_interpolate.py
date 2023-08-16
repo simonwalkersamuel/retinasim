@@ -315,12 +315,8 @@ def apply_to_graph(fname,graph=None,interp=True,ofile=None,interpolation_resolut
                 # Removed 'doubled up' edgepoints
                 branch0_int = branch0[pnt_inds]
                 brads = brads[pnt_inds]
-                
-                breakpoint()
 
                 if np.mean(radii[inds])>0.: # and np.sum(lengths)>period/2.:
-                    breakpoint()
-
                     # Smooth
                     if len(inds[0])>5: 
                         weights = np.ones(branch0_int.shape[0])
