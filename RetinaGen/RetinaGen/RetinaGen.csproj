@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net6.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Vascular.IO.Amira\Vascular.IO.Amira.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Vascular.Networks" Version="0.1.1" />
+  </ItemGroup>
+
+</Project>

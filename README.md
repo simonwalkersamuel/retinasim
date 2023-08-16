@@ -45,7 +45,7 @@ RetinaSim is under development and has so far only been installed and tested on 
 1) Follow instructions on https://github.com/AndrewAGuy/vascular-networks
 
 ## Installing Pymira
-1) Clone https://github.com/CABI-SWS/pymira
+1) Clone https://github.com/CABI-SWS/pymira into the site-packages folder in the virtual environment
 
 ## Running RetinaSim
 From a command line interface, activate the virtual environment and cd to site-packages/retinasim.
@@ -53,6 +53,7 @@ From a command line interface, activate the virtual environment and cd to site-p
 Enter `python main.py /OUTPUT/DIRECTORY/` for default operation
 
 ## Link to data
-Example simulation data referenced in the paper can be found here:
-https://www.dropbox.com/scl/fo/whwru5rmz8g7cr0h8ytg1/h?rlkey=ynbh2kdhe0pcvpfo6cypm9oc6&dl=0
-
+Example simulation data referenced in the paper can be found here:  
+https://www.dropbox.com/scl/fo/whwru5rmz8g7cr0h8ytg1/h?rlkey=ynbh2kdhe0pcvpfo6cypm9oc6&dl=0  
+Example retinal vessel segmentations referenced in the paper can be found here:  
+https://www.dropbox.com/scl/fo/nambm5mg4434aq7zmm3vs/h?rlkey=4kmkof44xptxir6h30xno01ia&dl=0
