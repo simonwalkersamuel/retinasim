@@ -1,3 +1,6 @@
 [submodule "Reanimate"]
 	path = Reanimate
 	url = git@github.com:simonwalkersamuel/Reanimate.git
+[submodule "pymira"]
+	path = pymira
+	url = git@github.com:CABI-SWS/pymira.git
