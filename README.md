@@ -47,6 +47,7 @@ git clone git@github.com:simonwalkersamuel/retinasim.git
 ```
 5) Install dependencies using pip:
 ```
+cd retinasim
 pip install -r requirements.txt
 ```
 
