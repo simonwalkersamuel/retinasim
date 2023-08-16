@@ -14,6 +14,8 @@ Emmeline Brown, Andrew Guy, Natalie Holroyd, Paul Sweeney, Lucie Gourmet, Hannah
 
 bioRxiv 2023.07.10.548427; doi: https://doi.org/10.1101/2023.07.10.548427
 
+For more information or collaboraitons, please contact: simon.walkersamuel@ucl.ac.uk
+
 ## License
 This project is licensed under the GNU Affero General Public License v3.0 (AGPL-3.0).
 
