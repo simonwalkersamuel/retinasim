@@ -53,9 +53,9 @@ pip install -r requirements.txt
 
 ### Installing Reanimate
 
-1) Cd to the Reanimate directory in this repo
-2) Make sure cmake is installed and then enter:
+1) Cd to the Reanimate directory in this repo and compile the code (first making sure cmake is installed):
 ```
+cd Reanimate
 cmake .
 make
 ```
