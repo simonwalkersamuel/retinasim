@@ -154,8 +154,9 @@ def apply_to_graph(fname,graph=None,interp=True,ofile=None,interpolation_resolut
     edges_corrected = np.zeros(nedge,dtype='bool')
     node_corrected = np.zeros(nnode,dtype='bool')
     
+    # Ideally overlay by branch, allowing deviations to pass through bifurcations uninterrupted
     if branch is not None:
-        print('Overlaying wriggle (by branch)...')
+        print(f'Overlaying wriggle (by branch). afH={afH},afL={afL},pfH={pfH},pfL={pfL}')
         inlet,outlet = identify_inlet_outlet(graph)
         
         # Locate inlets/outlets to ignore them during processing
@@ -344,7 +345,7 @@ def apply_to_graph(fname,graph=None,interp=True,ofile=None,interpolation_resolut
                         branch0_sin,w1 = overlay_sine(branch0_int,amplitude=amplitude*0.7,period=period,tether_start=False,tether_end=False)
                         
                         # Low frequency
-                        #amplitude = np.clip(brads*2.5,25.,None)        
+                        amplitude = np.clip(brads*2.5,25.,None)        
                         if pfL is None:
                             pfL = np.random.uniform(30.,50.)
                         period = brads*pfL #np.clip(brads*pfL,350.,None)

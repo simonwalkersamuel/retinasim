@@ -410,12 +410,12 @@ def main(args):
         recon_times = None
         inject.conc_movie(graph,data=conc,time=t,recon_times=recon_times,odir=concPath,win_width=args.win_width,win_height=args.win_width,eye=eye,movie_naming=False)
     
-def batch(args,start=0):
+def batch(args):
 
     if not os.path.exists(args.path):
         os.mkdir(args.path)
 
-    for i in range(start,n):
+    for i in range(args.batch_offset,args.nbatch):
         cname = join(args.path,f'sim{str(i).zfill(8)}')
         args.name = cname
         main(args)
@@ -427,7 +427,7 @@ def create_parser():
     parser.add_argument('--name', type=str, default='', help='Simulation name')
     parser.add_argument('--quiet', type=bool, default=True, help='Inhibit display of debugging output (default=True)')
     parser.add_argument('--batch', type=bool, default=False, help='Batch mode (boolean), default=False')
-    parser.add_argument('--nbatch', type=int, default=0, help='Number of batches to generate')
+    parser.add_argument('--nbatch', type=int, default=10, help='Number of batches to generate')
     parser.add_argument('--batch_offset', type=int, default=0, help='Batch index to begin at')
     parser.add_argument('--overwrite_existing', type=bool, default=False, help='Overwrite existing data (default=False)')
     parser.add_argument('--create_lsystem', type=bool, default=True, help='Create new L-sysem data (otherwise load existing) (default=True)')
@@ -464,4 +464,4 @@ if __name__=='__main__':
         main(args)
     # Batch run
     else:
-        batch(args,start=args.batch_offset)
+        batch(args)
