@@ -6,8 +6,9 @@
 
 ## Paper
 
-**Physics-informed deep generative learning for quantitative assessment of the retina**
 If you use this repository for your research, please reference:
+
+**Physics-informed deep generative learning for quantitative assessment of the retina**
 
 Emmeline Brown, Andrew Guy, Natalie Holroyd, Paul Sweeney, Lucie Gourmet, Hannah Coleman, Claire Walsh, Rebecca Shipley, Ranjan Rajendram, Simon Walker-Samuel
 
