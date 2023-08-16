@@ -1,0 +1,3 @@
+[submodule "Reanimate"]
+	path = Reanimate
+	url = git@github.com:simonwalkersamuel/Reanimate.git
