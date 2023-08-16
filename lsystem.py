@@ -1436,7 +1436,7 @@ def simulate_cco_seed(prefix='',params=None,max_cycles=10,path=None,plot=False,d
     #print('Simulating CCO seed...')
 
     if path is None:
-        path = r'/mnt/data2/retinasim/cco'
+        return
     
     make_dir(path)
     #make_dir(join(path,'graph'))
@@ -1645,16 +1645,6 @@ def simulate_cco_seed(prefix='',params=None,max_cycles=10,path=None,plot=False,d
         o3d.visualization.draw_geometries(cylinders+[pcd,pcd1],mesh_show_wireframe=False)
     
     return gfile
-
-    
-def simulate_cco_seed_batch():
-
-    path = r'/mnt/data2/retinasim/cco_batch'
-    nsim = 100
-    for i in range(nsim):
-        path_cur = os.path.join(path,'sim_{}'.format(i))
-        #prefix = 'sim_{}_'.format(i)
-        simulate_cco_seed(path=path_cur)
     
 if __name__=='__main__':
 

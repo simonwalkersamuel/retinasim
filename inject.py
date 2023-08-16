@@ -848,13 +848,13 @@ def conc_movie(graph,data=None,time=None,recon_times=None,odir=None,win_width=19
     
     tp.destroy_window()
     
-def recon_conc(graph=None,path=None,gfile=None,image_dir=None,conc_dir=None,eye=None,skip=1,recon_times=None,movie_naming=True,delete_previous=True,win_width=1920,win_height=1080,highlight_optic_disc=False,cmax=0.01,log_scale=False,cmap_range=[0.,0.01]):
+def recon_conc(graph=None,path=None,gfile=None,geometry_file=None,image_dir=None,conc_dir=None,eye=None,skip=1,recon_times=None,movie_naming=True,delete_previous=True,win_width=1920,win_height=1080,highlight_optic_disc=False,cmax=0.01,log_scale=False,cmap_range=[0.,0.01]):
 
     #win_width = 1920*3
     #win_height = win_width #1080*3
 
     if path is None:
-        path = '/mnt/data2/retinasim/cco_batch_v1/sim00000000/cco'
+        return
     if gfile is None:
         gfile = join(path,'retina_cco_a2v_reanimate_crawl.am') 
     if conc_dir is None:
@@ -862,7 +862,6 @@ def recon_conc(graph=None,path=None,gfile=None,image_dir=None,conc_dir=None,eye=
     pfile = join(conc_dir,"concentration_data.p")
 
     if eye is None:    
-        geometry_file = '/mnt/data2/retinasim/cco_batch_v1/sim00000000/lsystem/retina_geometry.p'
         eye = Eye()
         eye.load(geometry_file)
     

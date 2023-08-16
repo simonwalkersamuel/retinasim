@@ -1164,7 +1164,7 @@ def connect_vessel_endpoints_directly(graph,rad=0.1,furthest_node_distance=1000.
     first_edgepoint_inds = np.concatenate([[0],np.cumsum(nedgepoints_new)[:-1]])
     
     # Find where each node appears in the edge connectivity array, and store for future use
-    tmpfile = '/mnt/data2/retinasim/cco/graph/tmp.p'
+    tmpfile = '~/tmp.p'
     edge_node_lookup = create_edge_node_lookup(nodecoords_new,edgeconn_new,tmpfile=tmpfile,restore=restore_edge_lookup)
 
     # Assign a radius to nodes using the largest radius of each connected edge
