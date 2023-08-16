@@ -39,7 +39,7 @@ conda create --name retinasim python=3.8
 3) Start the virtual environment and enter the `site-packages` folder
 ```
 conda activate retinasim
-cd lib/python3.8/site-packages
+cd ANACONDA_DIR/envs/retinasim/lib/python3.8/site-packages
 ```
 4) Clone this repository
 ```
