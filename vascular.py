@@ -12,16 +12,14 @@ import json
 
 from retinasim.utility import *
 
-if os.name=='nt':
-    PATH = r'C:\Users\simon\vascular\vascular-ucl-collab\Retina\bin\Debug\net6.0'
-    EXE_PATH = join(PATH,'Retina.exe')
-    DATA_PATH = r'C:\Users\simon\Desktop'
-    OPATH = DATA_PATH
+PATH = RETINAGEN_DIR
+DATA_PATH = RETINAGEN_DATA_DIR
+OPATH = DATA_PATH
+
+if os.name=='nt':   
+    EXE_PATH = join(PATH,'RetinaGen.exe')
 else:
-    PATH = '/home/simon/vascular/vascular-ucl-collab/Retina/bin/Debug/net6.0'
-    EXE_PATH = join(PATH,'Retina')
-    DATA_PATH = '/mnt/data2/retinasim/test/lsystem/graph'
-    OPATH = DATA_PATH
+    EXE_PATH = join(PATH,'RetinaGen')
 
 class VascularConfig(object):
 
