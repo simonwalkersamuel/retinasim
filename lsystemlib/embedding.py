@@ -660,8 +660,8 @@ def embed_graph(embedding_resolution=[10.,10.,10.],embedding_dim=[512,512,512],d
         #print('Embedding initialised: {}, {}'.format(filename,grid.shape))
         
         #breakpoint()
-        def inside_domain(coord,extent):
-            return coord[0]>=extent[0,0] and coord[0]<=extent[0,1] and coord[1]>=extent[1,0] and coord[1]<=extent[1,1] and coord[2]>=extent[2,0] and coord[2]<=extent[2,1] 
+        def inside_domain(coord,extent,margin=100.):
+            return coord[0]>=(extent[0,0]-margin) and coord[0]<=(extent[0,1]+margin) and coord[1]>=(extent[1,0]-margin) and coord[1]<=(extent[1,1]+margin) and coord[2]>=(extent[2,0]-margin) and coord[2]<=(extent[2,1]+margin) 
                 
         # Check any points are in the domain
         if np.any(points.min(axis=0)>domain[:,1]) or np.any(points.max(axis=0)<domain[:,0]):
