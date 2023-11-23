@@ -401,7 +401,7 @@ class EmbedVessels(object):
         if self.vessel_midline is not None and not ignore_midline: # and np.all(start_pix>0) and np.all(start_pix<dims) and np.all(end_pix>0) and np.all(end_pix<dims):
                 
                 for i,coord in enumerate(xl):
-                    if coord[0]<dims[0] and coord[1]<dims[1] and coord[2]<dims[2] and (clip_at_grid_resolution and rl[i]*2>=1) or not clip_at_grid_resolution:
+                    if coord[0]<dims[0] and coord[1]<dims[1] and coord[2]<dims[2] and ((clip_at_grid_resolution and rl[i]*2>=1) or not clip_at_grid_resolution):
                         self.vessel_midline[coord[0],coord[1],coord[2]] = 1
                         #vessel_grid = self.embed_sphere(coord,rl[i],data=vessel_grid,fill_mode=fill_mode)
 
@@ -581,7 +581,7 @@ def make_dir(dir,overwrite_existing=False):
 def embed_graph(embedding_resolution=[10.,10.,10.],embedding_dim=[512,512,512],domain=None,store_midline_diameter=True,store_diameter=True,
                 path=None,filename=None,overwrite_existing=True,graph_embedding=False,d_dir=None,m_dir=None,m2_dir=None,
                 file_type='nii',centre_mode='fixed',centre_point=arr([0.,0.,0.]),rep_index=0,ignore_null_vessels=False,
-                radial_centre=None,prefix='',write=True,sg=None,clip_vessel_radius=[None,None],iter_data=None,fill_mode='binary'
+                radial_centre=None,prefix='',write=True,sg=None,clip_vessel_radius=[None,None],iter_data=None,fill_mode='binary',clip_at_grid_resolution=True
                 ):
                 
     noise = False
@@ -683,9 +683,9 @@ def embed_graph(embedding_resolution=[10.,10.,10.],embedding_dim=[512,512,512],d
                     xs,xe = pts[i-1],pts[i]
                     # Check if inside subvolume
                     if inside_domain(xs,extent) and inside_domain(xe,extent):
-                        embed_vessels._embed_vessel(xs,xe,rads[i-1],rads[i],grid,dims=dims,extent=extent,clip_at_grid_resolution=True,fill_mode='binary',graph_embedding=graph_embedding,clip_vessel_radius=clip_vessel_radius)
+                        embed_vessels._embed_vessel(xs,xe,rads[i-1],rads[i],grid,dims=dims,extent=extent,clip_at_grid_resolution=clip_at_grid_resolution,fill_mode='binary',graph_embedding=graph_embedding,clip_vessel_radius=clip_vessel_radius)
                         if diameter is not None:
-                            embed_vessels._embed_vessel(xs,xe,rads[i-1],rads[i],diameter,dims=dims,extent=extent,clip_at_grid_resolution=True,fill_mode='diameter',graph_embedding=graph_embedding,clip_vessel_radius=clip_vessel_radius,ignore_midline=True)
+                            embed_vessels._embed_vessel(xs,xe,rads[i-1],rads[i],diameter,dims=dims,extent=extent,clip_at_grid_resolution=clip_at_grid_resolution,fill_mode='diameter',graph_embedding=graph_embedding,clip_vessel_radius=clip_vessel_radius,ignore_midline=True)
                         embed_count += 1
 
         if embed_count>0 or ignore_null_vessels:
