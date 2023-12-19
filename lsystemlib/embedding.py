@@ -92,7 +92,7 @@ class EmbedVessels(object):
 
         return pix
             
-    def embed_sphere_aniso(self, x0, r, dims=None,fill_val=None,data=None,resolution=[1,1,1],fill_mode='binary'):
+    def embed_sphere_aniso(self, x0, r, dims=None,fill_val=None,data=None,resolution=[1.,1.,1.],fill_mode='binary'):
     
         if data is not None:
             dims = data.shape
@@ -337,7 +337,7 @@ class EmbedVessels(object):
         self._embed_vessel(start_coord,end_coord,rs,re,self.vessel_grid,dims=dims,extent=extent,tree=tree,sphere_connections=sphere_connections,seg_id=seg_id)
         
     def _embed_vessel(self,start_coord,end_coord,rs,re,vessel_grid,dims=None,extent=None,voxel_size=None,node_type=[None,None],tree=None,sphere_connections=False,
-                           seg_id=None,clip_at_grid_resolution=True,fill_mode='diameter',graph_embedding=False,clip_vessel_radius=[None,None],ignore_midline=False):
+                           seg_id=None,clip_at_grid_resolution=True,fill_mode='diameter',graph_embedding=True,clip_vessel_radius=[None,None],ignore_midline=False):
         c = (end_coord + start_coord) / 2.
         
         if dims is None:
@@ -660,7 +660,7 @@ def embed_graph(embedding_resolution=[10.,10.,10.],embedding_dim=[512,512,512],d
         #print('Embedding initialised: {}, {}'.format(filename,grid.shape))
         
         #breakpoint()
-        def inside_domain(coord,extent,margin=100.):
+        def inside_domain(coord,extent,margin=0.):
             return coord[0]>=(extent[0,0]-margin) and coord[0]<=(extent[0,1]+margin) and coord[1]>=(extent[1,0]-margin) and coord[1]<=(extent[1,1]+margin) and coord[2]>=(extent[2,0]-margin) and coord[2]<=(extent[2,1]+margin) 
                 
         # Check any points are in the domain
@@ -670,6 +670,7 @@ def embed_graph(embedding_resolution=[10.,10.,10.],embedding_dim=[512,512,512],d
             break
             
         embed_count = 0
+        gc = sg.get_node_count()
         for ei,edge in enumerate(edges):
             x0 = node_coords[edge[0]]
             x1 = node_coords[edge[1]]
@@ -677,15 +678,23 @@ def embed_graph(embedding_resolution=[10.,10.,10.],embedding_dim=[512,512,512],d
             p1 = p0 + npts[ei]
             pts = points[p0:p1] # um
             rads = radii[p0:p1]
+            
+            node_type = [gc[edge[0]],gc[edge[1]]]
 
             for i,pt in enumerate(pts):
                 if i>0:
                     xs,xe = pts[i-1],pts[i]
+                    pnt_type = [1,1]
                     # Check if inside subvolume
                     if inside_domain(xs,extent) and inside_domain(xe,extent):
-                        embed_vessels._embed_vessel(xs,xe,rads[i-1],rads[i],grid,dims=dims,extent=extent,clip_at_grid_resolution=clip_at_grid_resolution,fill_mode='binary',graph_embedding=graph_embedding,clip_vessel_radius=clip_vessel_radius)
+                        if i==1:
+                            pnt_type[0] = node_type[0]
+                        if i==pts.shape[0]-1:
+                            pnt_type[1] = node_type[1]
+
+                        embed_vessels._embed_vessel(xs,xe,rads[i-1],rads[i],grid,node_type=pnt_type,dims=dims,extent=extent,clip_at_grid_resolution=clip_at_grid_resolution,fill_mode='binary',graph_embedding=graph_embedding,clip_vessel_radius=clip_vessel_radius)
                         if diameter is not None:
-                            embed_vessels._embed_vessel(xs,xe,rads[i-1],rads[i],diameter,dims=dims,extent=extent,clip_at_grid_resolution=clip_at_grid_resolution,fill_mode='diameter',graph_embedding=graph_embedding,clip_vessel_radius=clip_vessel_radius,ignore_midline=True)
+                            embed_vessels._embed_vessel(xs,xe,rads[i-1],rads[i],diameter,node_type=pnt_type,dims=dims,extent=extent,clip_at_grid_resolution=clip_at_grid_resolution,fill_mode='diameter',graph_embedding=graph_embedding,clip_vessel_radius=clip_vessel_radius,ignore_midline=True)
                         embed_count += 1
 
         if embed_count>0 or ignore_null_vessels:
