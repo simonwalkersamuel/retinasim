@@ -16,7 +16,7 @@ from pymira import spatialgraph
 
 class EmbedVessels(object):
 
-    def __init__(self,ms=256,vessel_grid_size=None,domain=None,resolution=2.5,offset=arr([0.,0.,0.]),store_midline=True,store_midline_diameter=False,store_diameter=False):
+    def __init__(self,ms=256,vessel_grid_size=None,domain=None,resolution=2.5,offset=arr([0.,0.,0.]),store_midline=True,store_midline_diameter=False,store_diameter=False,store_alpha=True):
     
         """
         Class for embedding spatial graphs into 3D arrays
@@ -72,6 +72,10 @@ class EmbedVessels(object):
             self.vessel_midline_diameter = np.zeros(self.vessel_grid_size,dtype=self.dtype)
         else:
             self.vessel_midline_diameter = None
+        if store_alpha:
+            self.alpha = np.zeros(self.vessel_grid_size,dtype=self.dtype)
+        else:
+            self.alpha = None
         self.surface_grid = None
         self.label_grid = None
         
@@ -401,12 +405,14 @@ class EmbedVessels(object):
         if self.vessel_midline is not None and not ignore_midline: # and np.all(start_pix>0) and np.all(start_pix<dims) and np.all(end_pix>0) and np.all(end_pix<dims):
                 
                 for i,coord in enumerate(xl):
-                    if coord[0]<dims[0] and coord[1]<dims[1] and coord[2]<dims[2] and ((clip_at_grid_resolution and rl[i]*2>=1) or not clip_at_grid_resolution):
+                    if coord[0]<dims[0] and coord[1]<dims[1] and coord[2]<dims[2] and \
+                       np.all(coord>=0) and \
+                       ((clip_at_grid_resolution and rl[i]*2>=1) or not clip_at_grid_resolution):
                         self.vessel_midline[coord[0],coord[1],coord[2]] = 1
                         #vessel_grid = self.embed_sphere(coord,rl[i],data=vessel_grid,fill_mode=fill_mode)
 
                 if graph_embedding: # Set pixel value based on node type
-                    if ((clip_at_grid_resolution and rl[0]*2>=1) or not clip_at_grid_resolution) and np.all(start_pix<dims):
+                    if ((clip_at_grid_resolution and rl[0]*2>=1) or not clip_at_grid_resolution) and np.all(start_pix<dims) and np.all(start_pix>=0):
                         if tree is not None and seg_id is not None:
                             # Branch nodes?         
                             if tree.node_type[tree.segment_start_node_id[seg_id]]==2:
@@ -418,7 +424,7 @@ class EmbedVessels(object):
                             if node_type[0] is not None:
                                 self.vessel_midline[start_pix[0],start_pix[1],start_pix[2]] = node_type[0]
 
-                    if ((clip_at_grid_resolution and rl[-1]*2>=1) or not clip_at_grid_resolution) and np.all(end_pix<dims):
+                    if ((clip_at_grid_resolution and rl[-1]*2>=1) or not clip_at_grid_resolution) and np.all(end_pix<dims) and np.all(end_pix>=0):
                         if tree is not None and seg_id is not None:
                             # Branch nodes?         
                             if tree.node_type[tree.segment_end_node_id[seg_id]]==2:
@@ -432,7 +438,7 @@ class EmbedVessels(object):
                             
         if self.vessel_midline_diameter is not None: # Set midline pixel value based on radius (useful to have - can just set all values to 1 for midline learning)
             for i,xli in enumerate(xl):
-                if xli[0]<dims[0] and xli[1]<dims[1] and xli[2]<dims[2]:
+                if xli[0]<dims[0] and xli[1]<dims[1] and xli[2]<dims[2] and np.all(xli>=0):
                     if clip_at_grid_resolution and rl[i]*2>=1:
                         self.vessel_midline_diameter[xli[0],xli[1],xli[2]] = rl[i]*2
                     elif not clip_at_grid_resolution:   
@@ -581,7 +587,8 @@ def make_dir(dir,overwrite_existing=False):
 def embed_graph(embedding_resolution=[10.,10.,10.],embedding_dim=[512,512,512],domain=None,store_midline_diameter=True,store_diameter=True,
                 path=None,filename=None,overwrite_existing=True,graph_embedding=False,d_dir=None,m_dir=None,m2_dir=None,
                 file_type='nii',centre_mode='fixed',centre_point=arr([0.,0.,0.]),rep_index=0,ignore_null_vessels=False,
-                radial_centre=None,prefix='',write=True,sg=None,clip_vessel_radius=[None,None],iter_data=None,fill_mode='binary',clip_at_grid_resolution=True
+                radial_centre=None,prefix='',write=True,sg=None,clip_vessel_radius=[None,None],iter_data=None,fill_mode='binary',clip_at_grid_resolution=True,ind=0,
+                psf=False,mc=None,subsample_factor=1,ijk=None,quiet=True,radius_scale=1.,lumen_radius_fraction=0.5,lumen=False
                 ):
                 
     noise = False
@@ -662,6 +669,31 @@ def embed_graph(embedding_resolution=[10.,10.,10.],embedding_dim=[512,512,512],d
         #breakpoint()
         def inside_domain(coord,extent,margin=0.):
             return coord[0]>=(extent[0,0]-margin) and coord[0]<=(extent[0,1]+margin) and coord[1]>=(extent[1,0]-margin) and coord[1]<=(extent[1,1]+margin) and coord[2]>=(extent[2,0]-margin) and coord[2]<=(extent[2,1]+margin) 
+           
+        def inside_domain_capsule(xs,xe,radius,extent,margin=0.):
+            # Define capsule parameters
+            C_capsule = np.mean(np.vstack([xs,xe]),axis=0) # capsule_center
+            length = np.linalg.norm(xe - xs)
+            if length==0:
+                return False
+            O_capsule = (xe - xs) / length #capsule_orientation
+            r_capsule = radius #capsule_radius
+            h_capsule = length/2. #capsule_half_length
+        
+            C_cuboid = np.mean(extent,axis=1) #cuboid_center
+            cuboid_dims = extent[:,1] - extent[:,0] #cuboid_length
+            # Compute the closest point on the capsule's axis to the cuboid center
+            P = C_capsule + np.dot(C_cuboid - C_capsule, O_capsule) * O_capsule
+
+            # Calculate the distances along each axis
+            dx = np.abs(P-C_cuboid)
+
+            # Check for overlap
+            if dx[0] <= (r_capsule + cuboid_dims[0]) and dx[1] <= (r_capsule + cuboid_dims[1]) and dx[2] <= (r_capsule + cuboid_dims[2]):
+                # Capsule and cuboid overlap
+                return True
+            else:
+                return False
                 
         # Check any points are in the domain
         if np.any(points.min(axis=0)>domain[:,1]) or np.any(points.max(axis=0)<domain[:,0]):
@@ -677,7 +709,7 @@ def embed_graph(embedding_resolution=[10.,10.,10.],embedding_dim=[512,512,512],d
             p0 = np.sum(npts[:ei])
             p1 = p0 + npts[ei]
             pts = points[p0:p1] # um
-            rads = radii[p0:p1]
+            rads = radii[p0:p1] * radius_scale
             
             node_type = [gc[edge[0]],gc[edge[1]]]
 
@@ -686,7 +718,9 @@ def embed_graph(embedding_resolution=[10.,10.,10.],embedding_dim=[512,512,512],d
                     xs,xe = pts[i-1],pts[i]
                     pnt_type = [1,1]
                     # Check if inside subvolume
-                    if inside_domain(xs,extent) and inside_domain(xe,extent):
+                    #breakpoint()
+                    #if inside_domain(xs,extent) and inside_domain(xe,extent):
+                    if inside_domain_capsule(xs,xe,np.max([rads[i-1],rads[i]]),extent):
                         if i==1:
                             pnt_type[0] = node_type[0]
                         if i==pts.shape[0]-1:
@@ -698,16 +732,16 @@ def embed_graph(embedding_resolution=[10.,10.,10.],embedding_dim=[512,512,512],d
                         embed_count += 1
 
         if embed_count>0 or ignore_null_vessels:
-            if embed_count==0:
+            if embed_count==0 and not quiet:
                 print('No vessel verts in domain')
-            else:
+            elif not quiet:
                 print(f'{embed_count} vessel pixels embedded')
             break
         else:
             count += 1
             print('Zero pixels embedded. Trying again (it. {} of 10)'.format(count))
             if count>10:
-                return
+                return None, sg
 
     # END WHILE
 
@@ -719,8 +753,7 @@ def embed_graph(embedding_resolution=[10.,10.,10.],embedding_dim=[512,512,512],d
         embed_vessels.write_vessel_grid(dfile,binary=False,nifti=nifti)
         embed_vessels.write_midline_grid(mfile,nifti=nifti)
         embed_vessels.write_midline_diameter_grid(mfile2,nifti=nifti) 
-    
-    print('Complete')
+
     return embed_vessels, sg
     
 def embed_surface(embedding_resolution=[10.,10.,10.],embedding_dim=[512,512,512],domain=None,
