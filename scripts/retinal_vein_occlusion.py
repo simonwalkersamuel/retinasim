@@ -1,6 +1,6 @@
 import numpy as np
 from pymira import spatialgraph
-from vessel_sim.retina_cco.retina_lsystem import Eye
+from retinasim.eye import Eye
 from tqdm import tqdm, trange
 import pickle
 import os

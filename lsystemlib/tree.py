@@ -2,7 +2,7 @@ import numpy as np
 arr = np.asarray
 #norm = np.linalg.norm
 dot = np.dot
-from vessel_sim import geometry
+from retinasim import geometry
 norm = geometry.norm
 from stl import mesh
 import time

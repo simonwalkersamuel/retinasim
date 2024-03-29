@@ -69,7 +69,7 @@ class EmbedVessels(object):
         else:
             self.vessel_diameter = None
         if store_midline_diameter:
-            self.vessel_midline_diameter = np.zeros(self.vessel_grid_size,dtype=self.dtype)
+            self.vessel_midline_diameter = np.zeros(self.vessel_grid_size,self.dtype)
         else:
             self.vessel_midline_diameter = None
         if store_alpha:

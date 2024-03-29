@@ -4,9 +4,9 @@ import numpy as np
 arr = np.asarray
 import pymira.spatialgraph as sp
 import open3d as o3d
-from vessel_sim import geometry
+from retinasim import geometry
 from functools import partial
-from vessel_sim.embedding import embed_graph
+from retinasim.lsystemlib.embedding import embed_graph
 from tqdm import tqdm
 
 from retinasim.retina_surface import RetinaSurface
@@ -164,7 +164,7 @@ def project_to_surface(graph=None,filename=None,vfile=None,efile=None,mesh_file_
             midLinePos = graph.get_data('midLinePos')
             if midLinePos is None:
                 midLinePos = np.zeros(radii.shape[0],dtype='int')
-            from vessel_sim.simplex_path import simplex_path,simplex_path_multi
+            from retinasim.simplex_path import simplex_path,simplex_path_multi
             ninterp = 20
             interp_points = np.zeros([(points.shape[0]-1)*ninterp,3])
 

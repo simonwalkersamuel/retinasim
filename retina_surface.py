@@ -29,7 +29,7 @@ class RetinaSurface():
     def __init__(self, domain=None, eye=None):
     
         if eye is None:
-            from vessel_sim.simulations.retina_simulation import Eye
+            from retina_sim.eye import Eye
             self.eye = Eye()
         else:
             self.eye = eye

@@ -1,7 +1,7 @@
 import numpy as np
 arr = np.asarray
 from matplotlib import pyplot as plt
-from vessel_sim import geometry
+from retinasim import geometry
 from scipy import interpolate
 from tqdm import tqdm, trange
 

@@ -1310,7 +1310,7 @@ class RetinaSimulation(Simulation):
 
                 if True:
                     coords = arr(coords)
-                    from vessel_sim.simplex_path import simplex_path,simplex_path_multi
+                    from retinasim.simplex_path import simplex_path,simplex_path_multi
                     points = np.zeros([(coords.shape[0]-1)*ninterp,3])
 
                     new_coords = coords.copy()

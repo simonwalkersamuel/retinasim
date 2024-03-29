@@ -30,7 +30,7 @@ class VascularConfig(object):
         self.win_proc = False
         
         if eye is None:
-            from vessel_sim.retina_cco.retina_main import Eye
+            from retinasim.eye import Eye
             eye = Eye()
     
         self.eye = eye
