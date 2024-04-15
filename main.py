@@ -179,7 +179,6 @@ def vascular_upper_lower(opath=None,lpath=None,input_graphs=None,convert_to_json
     if combine:
         # Combine graphs into one file
         ofile = 'retina_cco.am'
-        breakpoint()
         graph = combine_graphs.combine_cco(opath,amfiles,ofile)
         
         #graph = spatialgraph.SpatialGraph()
