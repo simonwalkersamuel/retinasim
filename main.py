@@ -286,7 +286,8 @@ def main(args):
 
     ### Create L-system seed ###
     if args.create_lsystem:
-        ofile = join(dataPath,'retina_lsystem.am')
+        ofile = 'retina_lsystem.am' #join(dataPath,'retina_lsystem.am')
+        breakpoint()
         combined_graph,mfiles = generate_lsystem(opath=dataPath,lpath=lpath,gfile=ofile,eye=eye)
 
     ### Run Retina sims ###
