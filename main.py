@@ -330,7 +330,8 @@ def main(args):
     if args.add_wriggle:
         graph = sine_interpolate.apply_to_graph('',graph=graph,ofile=None,interp=True)
         cap_file_r_c = cap_file_r.replace('.am','_crawl.am')
-        graph.write(join(cco_path,cap_file_r_c))
+        #graph.write(join(cco_path,cap_file_r_c))
+        graph.write(cap_file_r_c)
         
         vis = graph.plot_graph(scalar_color_name='VesselType',show=False,block=False,win_width=args.win_width,win_height=args.win_height,bgcolor=[1.,1.,1.])
         vis.screen_grab(join(cco_path,'artery_vein_cco_sine.png'))
