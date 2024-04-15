@@ -32,7 +32,7 @@ def generate_lsystem(opath=None,lpath=None,gfile=None,screen_grab=True,eye=None)
     lsystem.simulate_cco_seed(prefix='',params=None,max_cycles=5,path=lpath,plot=False,dataPath=opath,eye=eye)
     mfiles = ['retina_artery_lower.am','retina_vein_lower.am','retina_artery_upper.am','retina_vein_upper.am']
     
-    combined_graph = combine_graphs.combine_cco(opath,mfiles,gfile)
+    combined_graph = combine_graphs.combine_cco(opath,[join(lpath,m) for m in mfiles],gfile)
     
     # Screen grab result
     if screen_grab:
@@ -179,6 +179,7 @@ def vascular_upper_lower(opath=None,lpath=None,input_graphs=None,convert_to_json
     if combine:
         # Combine graphs into one file
         ofile = 'retina_cco.am'
+        breakpoint()
         graph = combine_graphs.combine_cco(opath,amfiles,ofile)
         
         #graph = spatialgraph.SpatialGraph()
@@ -287,7 +288,6 @@ def main(args):
     ### Create L-system seed ###
     if args.create_lsystem:
         ofile = 'retina_lsystem.am' #join(dataPath,'retina_lsystem.am')
-        breakpoint()
         combined_graph,mfiles = generate_lsystem(opath=dataPath,lpath=lpath,gfile=ofile,eye=eye)
 
     ### Run Retina sims ###
