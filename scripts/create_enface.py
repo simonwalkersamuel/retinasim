@@ -189,7 +189,7 @@ def create_enface(path='',opath='',ofile='',graph=None,xdim=500,ydim=500,view_si
     # Save images
     im = Image.fromarray(image.astype('int8'))
     if ofile=='':
-        ofile = join(opath,'enface_segmentation.png')
+        ofile = 'enface_segmentation.png' #join(opath,'enface_segmentation.png')
     im = im.convert('RGB')
     im.save(join(opath,ofile))
     print(f'Saved enface segmentation to to {ofile}')

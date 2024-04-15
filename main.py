@@ -279,7 +279,7 @@ def main(args):
 
     # Create directory structure
     lpath, cco_path, dataPath, surfacePath, embedPath, concPath = create_directories(args.path,args.name,overwrite_existing=args.overwrite_existing)
-    
+
     # Load or create geometry
     geometry_file = join(dataPath,"retina_geometry.p")
     eye = get_eye(geometry_file,create_new_geometry=args.create_new_geometry)
