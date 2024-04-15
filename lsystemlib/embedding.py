@@ -6,7 +6,7 @@ import os
 join = os.path.join
 from skimage import draw
 import nibabel as nib
-from vessel_sim import geometry
+from pymira import geometry
 from matplotlib import pyplot as plt
 from functools import partial
 import open3d as o3d
