@@ -325,6 +325,8 @@ def main(args):
     cap_file_r = cap_file.replace('.am','_reanimate.am')
     graph = flow_ordering(graph,cco_path=cco_path,rfile=cap_file_r,run_reanimate=args.run_reanimate,arterial_pressure=args.arterial_pressure,venous_pressure=args.venous_pressure)
         
+    breakpoint()
+        
     ### Sinusoidal fluctuations ###
     if args.add_wriggle:
         graph = sine_interpolate.apply_to_graph('',graph=graph,ofile=None,interp=True)
@@ -341,7 +343,7 @@ def main(args):
         # Re-run REANIMATE (only if not adding voronoi capillaries...)
         # Write .dat file to fixed location
         if args.direct_conn:
-            graph = reanimate_sim(graph,opath=cco_path,ofile=cap_file_r_c,a_pressure=args.arterial_pressure,v_pressure=args.venous_pressure)
+            graph = reanimate_sim(graph,opath=cco_path,ofile=os.path.basename(cap_file_r_c),a_pressure=args.arterial_pressure,v_pressure=args.venous_pressure)
     else:
         cap_file_r_c = cap_file_r
         
@@ -356,7 +358,8 @@ def main(args):
             gvars.remove_edges(redge)
             graph = gvars.set_in_graph()
         graph = voronoi_capillary_bed(cco_path,cco_ofile,graph=graph,write=False,plot=False,displace_degen=True,geometry_file=geometry_file,eye=eye)
-        cap_file = os.path.join(cco_path,cap_file_r_c.replace('.am','_vorcap.am'))
+        #cap_file = os.path.join(cco_path,cap_file_r_c.replace('.am','_vorcap.am'))
+        cap_file = cap_file_r_c.replace('.am','_vorcap.am')
                     
         graph.write(cap_file)
     
