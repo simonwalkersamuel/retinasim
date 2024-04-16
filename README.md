@@ -55,8 +55,8 @@ pip install -r requirements.txt
 
 1) Change directory to the Reanimate directory in this repo and compile the code (first making sure cmake is installed):
 ```
-cd Reanimate
-cmake .
+cd Reanimate/Reanimate
+cmake .../
 make
 ```
 2) Change directory back to the retinasim directory and edit the `config.py` directory. Edit REANIMATE_TMP_DIR_LOC to correspond to a folder for temporary storage results during processing (deleted at completion).
