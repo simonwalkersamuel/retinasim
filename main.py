@@ -325,8 +325,6 @@ def main(args):
     cap_file_r = cap_file.replace('.am','_reanimate.am')
     graph = flow_ordering(graph,cco_path=cco_path,rfile=cap_file_r,run_reanimate=args.run_reanimate,arterial_pressure=args.arterial_pressure,venous_pressure=args.venous_pressure)
         
-    breakpoint()
-        
     ### Sinusoidal fluctuations ###
     if args.add_wriggle:
         graph = sine_interpolate.apply_to_graph('',graph=graph,ofile=None,interp=True)
