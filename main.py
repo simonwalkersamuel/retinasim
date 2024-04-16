@@ -311,7 +311,7 @@ def main(args):
                     
         graph.write(cap_file)
     else:
-        # Create defualt file with no capillary bed
+        # Create default file with no capillary bed
         cap_file = os.path.join(cco_path,cco_ofile.replace('.am','_a2v.am'))
         if not os.path.exists(cap_file):
             cap_file = os.path.join(cco_path,cco_ofile.replace('.am','_vorcap.am'))
