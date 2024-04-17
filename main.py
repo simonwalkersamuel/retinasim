@@ -323,7 +323,7 @@ def main(args):
 
     ### Run REANIMATE to get flow predictions ###
     cap_file_r = cap_file.replace('.am','_reanimate.am')
-    graph = flow_ordering(graph,cco_path=cco_path,rfile=cap_file_r,run_reanimate=args.run_reanimate,arterial_pressure=args.arterial_pressure,venous_pressure=args.venous_pressure)
+    graph = flow_ordering(graph,cco_path=cco_path,rfile=os.path.basename(cap_file_r),run_reanimate=args.run_reanimate,arterial_pressure=args.arterial_pressure,venous_pressure=args.venous_pressure)
         
     ### Sinusoidal fluctuations ###
     if args.add_wriggle:
