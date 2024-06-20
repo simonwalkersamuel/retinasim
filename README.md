@@ -1,3 +1,4 @@
+<a href="https://zenodo.org/doi/10.5281/zenodo.12188764"><img src="https://zenodo.org/badge/674607155.svg" alt="DOI"></a>
 # RetinaSim
 
 **Retinal layer and vasculature simulation**
