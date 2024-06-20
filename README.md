@@ -26,6 +26,7 @@ RetinaSim relies on several libraries:
 2) Reanimate for 1D flow simulation (provided here as a submodule);
 3) RetinaGen for procedural modelling of blood vessel networks (provided here as a submodule);
 4) Pymira for creating and editing spatial graph structures in python (provided here as a submodule)
+5) CycleGAN for generative deep learning transformation between imaging modalities (provided here as a submodule)
 
 RetinaSim is under development and has so far only been installed and tested on Ubuntu (20.04.5)
 
