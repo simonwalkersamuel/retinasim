@@ -69,7 +69,7 @@ class EmbedVessels(object):
         else:
             self.vessel_diameter = None
         if store_midline_diameter:
-            self.vessel_midline_diameter = np.zeros(self.vessel_grid_size,self.dtype)
+            self.vessel_midline_diameter = np.zeros(self.vessel_grid_size,'float')
         else:
             self.vessel_midline_diameter = None
         if store_alpha:
@@ -106,7 +106,8 @@ class EmbedVessels(object):
             data = np.zeros(dims,self.dtype)
             
         # Create ellipse
-        ellip_base = draw.ellipsoid(r/2.,r/2.,r/2.,spacing=resolution,levelset=False)
+        #ellip_base = draw.ellipsoid(r/2.,r/2.,r/2.,spacing=resolution,levelset=False)
+        ellip_base = draw.ellipsoid(r,r,r,spacing=resolution,levelset=False)
         subs = np.where(ellip_base)
         sx = subs[0] + x0[0] - int(np.floor(ellip_base.shape[0]/2))
         sy = subs[1] + x0[1] - int(np.floor(ellip_base.shape[1]/2))
@@ -384,13 +385,20 @@ class EmbedVessels(object):
         # Midline
         start_pix = self.coord_to_pix(start_coord,extent,dims,voxel_size=voxel_size,clip=False)
         end_pix = self.coord_to_pix(end_coord,extent,dims,voxel_size=voxel_size,clip=False)
-        n = int(np.max(np.abs(end_pix - start_pix)))*2 #/np.min([r_pix_s_f[0],r_pix_e_f[0]]))
-        if n<=0: # No pixels
+        #n = int(np.sum(np.abs(end_pix-start_pix))) #  int(np.max(np.abs(end_pix - start_pix)))*2 #/np.min([r_pix_s_f[0],r_pix_e_f[0]]))
+        if np.all(start_pix==end_pix): # No pixels
             vessel_grid = self.embed_sphere_aniso(start_pix,r_pix_s_f[0],data=vessel_grid,fill_val=fill_val,fill_mode=fill_mode,resolution=voxel_size)
             return vessel_grid
             
-        xl = np.linspace(start_pix,end_pix,n,dtype='int')
-        rl = np.linspace(r_pix_s_f[0],r_pix_e_f[0],n,dtype='float')
+        #xl = np.linspace(start_pix,end_pix,n,dtype='int')
+        # Remeove any degenerate pixels
+        #deg = arr([True if x in xl[:i] else False for i,x in enumerate(xl)])
+        #xl = xl[deg]
+        
+        from skimage import draw
+        xl = np.vstack(draw.line_nd(start_pix,end_pix,endpoint=True)).transpose()
+        n = xl.shape[0]
+        rl = np.linspace(r_pix_s_f[0],r_pix_e_f[0],n,dtype='float',endpoint=True)
         radius = np.linspace(rs,re,n)
         
         for i,coord in enumerate(xl):
@@ -404,38 +412,38 @@ class EmbedVessels(object):
 
         if self.vessel_midline is not None and not ignore_midline: # and np.all(start_pix>0) and np.all(start_pix<dims) and np.all(end_pix>0) and np.all(end_pix<dims):
                 
-                for i,coord in enumerate(xl):
-                    if coord[0]<dims[0] and coord[1]<dims[1] and coord[2]<dims[2] and \
-                       np.all(coord>=0) and \
-                       ((clip_at_grid_resolution and rl[i]*2>=1) or not clip_at_grid_resolution):
-                        self.vessel_midline[coord[0],coord[1],coord[2]] = 1
-                        #vessel_grid = self.embed_sphere(coord,rl[i],data=vessel_grid,fill_mode=fill_mode)
+            for i,coord in enumerate(xl):
+                if coord[0]<dims[0] and coord[1]<dims[1] and coord[2]<dims[2] and \
+                   np.all(coord>=0) and \
+                   ((clip_at_grid_resolution and rl[i]*2>=1) or not clip_at_grid_resolution):
+                    self.vessel_midline[coord[0],coord[1],coord[2]] = 1
+                    #vessel_grid = self.embed_sphere(coord,rl[i],data=vessel_grid,fill_mode=fill_mode)
 
-                if graph_embedding: # Set pixel value based on node type
-                    if ((clip_at_grid_resolution and rl[0]*2>=1) or not clip_at_grid_resolution) and np.all(start_pix<dims) and np.all(start_pix>=0):
-                        if tree is not None and seg_id is not None:
-                            # Branch nodes?         
-                            if tree.node_type[tree.segment_start_node_id[seg_id]]==2:
-                                self.vessel_midline[start_pix[0],start_pix[1],start_pix[2]] = 2
-                            # Tips?
-                            if tree.node_type[tree.segment_start_node_id[seg_id]]==3:
-                                self.vessel_midline[start_pix[0],start_pix[1],start_pix[2]] = 3
-                        else:
-                            if node_type[0] is not None:
-                                self.vessel_midline[start_pix[0],start_pix[1],start_pix[2]] = node_type[0]
+            if graph_embedding: # Set pixel value based on node type
+                if ((clip_at_grid_resolution and rl[0]*2>=1) or not clip_at_grid_resolution) and np.all(start_pix<dims) and np.all(start_pix>=0):
+                    if tree is not None and seg_id is not None:
+                        # Branch nodes?         
+                        if tree.node_type[tree.segment_start_node_id[seg_id]]==2:
+                            self.vessel_midline[start_pix[0],start_pix[1],start_pix[2]] = 2
+                        # Tips?
+                        if tree.node_type[tree.segment_start_node_id[seg_id]]==3:
+                            self.vessel_midline[start_pix[0],start_pix[1],start_pix[2]] = 3
+                    else:
+                        if node_type[0] is not None:
+                            self.vessel_midline[start_pix[0],start_pix[1],start_pix[2]] = node_type[0]
 
-                    if ((clip_at_grid_resolution and rl[-1]*2>=1) or not clip_at_grid_resolution) and np.all(end_pix<dims) and np.all(end_pix>=0):
-                        if tree is not None and seg_id is not None:
-                            # Branch nodes?         
-                            if tree.node_type[tree.segment_end_node_id[seg_id]]==2:
-                                self.vessel_midline[end_pix[0],end_pix[1],end_pix[2]] = 2
-                            # Tips?
-                            if tree.node_type[tree.segment_end_node_id[seg_id]]==3:
-                                self.vessel_midline[end_pix[0],end_pix[1],end_pix[2]] = 3
-                        else:
-                            if node_type[1] is not None:
-                                self.vessel_midline[end_pix[0],end_pix[1],end_pix[2]] = node_type[1]
-                            
+                if ((clip_at_grid_resolution and rl[-1]*2>=1) or not clip_at_grid_resolution) and np.all(end_pix<dims) and np.all(end_pix>=0):
+                    if tree is not None and seg_id is not None:
+                        # Branch nodes?         
+                        if tree.node_type[tree.segment_end_node_id[seg_id]]==2:
+                            self.vessel_midline[end_pix[0],end_pix[1],end_pix[2]] = 2
+                        # Tips?
+                        if tree.node_type[tree.segment_end_node_id[seg_id]]==3:
+                            self.vessel_midline[end_pix[0],end_pix[1],end_pix[2]] = 3
+                    else:
+                        if node_type[1] is not None:
+                            self.vessel_midline[end_pix[0],end_pix[1],end_pix[2]] = node_type[1]
+                        
         if self.vessel_midline_diameter is not None: # Set midline pixel value based on radius (useful to have - can just set all values to 1 for midline learning)
             for i,xli in enumerate(xl):
                 if xli[0]<dims[0] and xli[1]<dims[1] and xli[2]<dims[2] and np.all(xli>=0):
@@ -588,7 +596,8 @@ def embed_graph(embedding_resolution=[10.,10.,10.],embedding_dim=[512,512,512],d
                 path=None,filename=None,overwrite_existing=True,graph_embedding=False,d_dir=None,m_dir=None,m2_dir=None,
                 file_type='nii',centre_mode='fixed',centre_point=arr([0.,0.,0.]),rep_index=0,ignore_null_vessels=False,
                 radial_centre=None,prefix='',write=True,sg=None,clip_vessel_radius=[None,None],iter_data=None,fill_mode='binary',fill_val=None,clip_at_grid_resolution=True,ind=0,
-                psf=False,mc=None,subsample_factor=1,ijk=None,quiet=True,radius_scale=1.,lumen_radius_fraction=0.5,lumen=False,val=255
+                psf=False,mc=None,subsample_factor=1,ijk=None,quiet=True,radius_scale=1.,lumen_radius_fraction=0.5,lumen=False,val=255,
+                background=None,opath=None
                 ):
                 
     noise = False
@@ -608,8 +617,12 @@ def embed_graph(embedding_resolution=[10.,10.,10.],embedding_dim=[512,512,512],d
     else:
         nifti = True
         file_ext = 'nii'
+        
+    if opath is None:
+        opath = path
 
     count = 0
+    #breakpoint()
     while True:
         if sg is None:
             print('Embedding file: {}, dim:{}, res:{}, path:{}, d_dir:{}'.format(filename,embedding_dim,embedding_resolution,path,d_dir))    
@@ -617,11 +630,11 @@ def embed_graph(embedding_resolution=[10.,10.,10.],embedding_dim=[512,512,512],d
             sg.read(join(path,filename))
             print('Graph read')
 
-        node_coords = sg.fields[0]['data']
-        edges = sg.fields[1]['data']
-        points = sg.fields[3]['data'] 
-        radii = sg.fields[4]['data']
-        npts = sg.fields[2]['data']
+        node_coords = sg.get_data('VertexCoordinates') 
+        edges = sg.get_data('EdgeConnectivity') 
+        points = sg.get_data('EdgePointCoordinates') 
+        radii = sg.get_data(sg.get_radius_field_name()) 
+        npts = sg.get_data('NumEdgePoints') 
         
         if centre_mode=='random':
             # Pick a node to centre on
@@ -646,11 +659,14 @@ def embed_graph(embedding_resolution=[10.,10.,10.],embedding_dim=[512,512,512],d
 
         if write:
             if d_dir is None:
-                d_dir = path.replace('graph','volume')
+                d_dir = opath.replace('graph','volume')
+                os.makedirs(d_dir, exist_ok=True)
             if m_dir is None:
-                m_dir = path.replace('graph','volume_midline')
+                m_dir = opath.replace('graph','volume_midline')
+                os.makedirs(m_dir, exist_ok=True)
             if m2_dir is None:
-                m2_dir = path.replace('graph','volume_midline_diameter')            
+                m2_dir = opath.replace('graph','volume_midline_diameter')            
+                os.makedirs(m2_dir, exist_ok=True)
 
             file_stub = filename.replace('.am','')
             file_stub = file_stub.replace('.','p')
@@ -711,7 +727,12 @@ def embed_graph(embedding_resolution=[10.,10.,10.],embedding_dim=[512,512,512],d
             pts = points[p0:p1] # um
             rads = radii[p0:p1] * radius_scale
             
-            node_type = [gc[edge[0]],gc[edge[1]]]
+            node_type = arr([gc[edge[0]],gc[edge[1]]])
+            node_type_rev = node_type.copy()
+            node_type_rev[node_type==1] = 2 # Terminal
+            node_type_rev[node_type==2] = 1 # Inline point
+            node_type_rev[node_type>2] = 3 # Branch point
+            node_type = node_type_rev
 
             for i,pt in enumerate(pts):
                 if i>0:
@@ -746,9 +767,14 @@ def embed_graph(embedding_resolution=[10.,10.,10.],embedding_dim=[512,512,512],d
     # END WHILE
 
     if write:            
-        dfile = dfile.replace(file_ext,'{}_res{}_dim{}_centre{}_n{}_rep{}.{}'.format(prefix,int(embedding_resolution[0]),embedding_dim[0],centre_point,n,rep_index,file_ext))
-        mfile = mfile.replace(file_ext,'{}_res{}_dim{}_centre{}_n{}_rep{}.{}'.format(prefix,int(embedding_resolution[0]),embedding_dim[0],centre_point,n,rep_index,file_ext))
-        mfile2 = mfile2.replace(file_ext,'{}_res{}_dim{}_centre{}_n{}_rep{}.{}'.format(prefix,int(embedding_resolution[0]),embedding_dim[0],centre_point,n,rep_index,file_ext))
+        if embedding_resolution is None:
+            er = 0
+        else:
+            er = int(embedding_resolution[0])
+        #breakpoint()
+        dfile = dfile.replace('.'+file_ext,'{}_res{}_dim{}_centre{}_rep{}.{}'.format(prefix,er,embedding_dim[0],centre_point,rep_index,file_ext))
+        mfile = mfile.replace('.'+file_ext,'{}_res{}_dim{}_centre{}_rep{}.{}'.format(prefix,er,embedding_dim[0],centre_point,rep_index,file_ext))
+        mfile2 = mfile2.replace('.'+file_ext,'{}_res{}_dim{}_centre{}_rep{}.{}'.format(prefix,er,embedding_dim[0],centre_point,rep_index,file_ext))
 
         embed_vessels.write_vessel_grid(dfile,binary=False,nifti=nifti)
         embed_vessels.write_midline_grid(mfile,nifti=nifti)

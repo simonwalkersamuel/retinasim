@@ -1529,16 +1529,17 @@ def simulate_cco_seed(prefix='',params=None,max_cycles=10,path=None,plot=False,d
                     _,new_branch = sim.add_t_branch_to_segment(br.root_segment,length=br.root_segment.get_length()*np.random.uniform(0.4,0.8),direction=cdir,fr=fr,diameters=[diameter,diameter])
                     new_branch.growth_process.handedness = 'N'
                 
-                if np.random.uniform()>0.5: #cur_len>1500. and np.random.uniform()>0.5:
-                    xdir = 1.
-                    rnd_additional_branch(sim,ylim=0.5,xdir=xdir,fr=np.random.uniform(0.01,0.1),direction=direction)
-                if np.random.uniform()>0.5: #cur_len>1500. and np.random.uniform()>0.5:
-                    xdir = 1.
-                    rnd_additional_branch(sim,ylim=0.5,xdir=xdir,fr=np.random.uniform(0.5,1.0),direction=direction)
-                
-                if np.random.uniform()>0.3:  
-                    xdir = -1.
-                    rnd_additional_branch(sim,ylim=0.8,xdir=xdir,direction=direction)
+                if False:
+                    if np.random.uniform()>0.5: #cur_len>1500. and np.random.uniform()>0.5:
+                        xdir = 1.
+                        rnd_additional_branch(sim,ylim=0.5,xdir=xdir,fr=np.random.uniform(0.01,0.1),direction=direction)
+                    if np.random.uniform()>0.5: #cur_len>1500. and np.random.uniform()>0.5:
+                        xdir = 1.
+                        rnd_additional_branch(sim,ylim=0.5,xdir=xdir,fr=np.random.uniform(0.5,1.0),direction=direction)
+                    
+                    if np.random.uniform()>0.3:  
+                        xdir = -1.
+                        rnd_additional_branch(sim,ylim=0.8,xdir=xdir,direction=direction)
                 
                 return vdata
 
