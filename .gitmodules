@@ -4,3 +4,6 @@
 [submodule "pymira"]
 	path = pymira
 	url = git@github.com:CABI-SWS/pymira.git
+[submodule "cyclegan"]
+	path = cyclegan
+	url = git@github.com:emmeline-brown/cyclegan.git

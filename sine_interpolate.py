@@ -132,8 +132,8 @@ def apply_to_graph(fname,graph=None,interp=True,ofile=None,interpolation_resolut
     points = graph.get_data('EdgePointCoordinates')
     radii = graph.get_data(radName)
     #edge_radii = graph.point_scalars_to_edge_scalars(name=radName)
-    branch = graph.get_data('Branch').astype('int')
-    order = graph.get_data('Order').astype('int')
+    branch = graph.get_data('Branch') #.astype('int')
+    order = graph.get_data('Order') #.astype('int')
     vtype = graph.get_data('VesselType').astype('int')
     nedge = edgeconn.shape[0]
     nnode = nodes.shape[0]
@@ -154,8 +154,13 @@ def apply_to_graph(fname,graph=None,interp=True,ofile=None,interpolation_resolut
     edges_corrected = np.zeros(nedge,dtype='bool')
     node_corrected = np.zeros(nnode,dtype='bool')
     
+    #scalars = graph.get_scalars()
+    #new_scalar_data = [x['data'] for x in scalars]
+    
     # Ideally overlay by branch, allowing deviations to pass through bifurcations uninterrupted
     if branch is not None:
+        branch = branch.astype('int')
+        order = order.astype('int')
         print(f'Overlaying wriggle (by branch). afH={afH},afL={afL},pfH={pfH},pfL={pfL}')
         inlet,outlet = identify_inlet_outlet(graph)
         
@@ -191,7 +196,7 @@ def apply_to_graph(fname,graph=None,interp=True,ofile=None,interpolation_resolut
             #print(branch_max_radius[i])
             # Indices of edgepoints from the current branch
             if bind>=0:
-                inds = np.where(branch==bind)
+                inds = np.where( (branch==bind) & (filter[epi]==True) )
             else:
                 inds = [[]]
             
@@ -237,6 +242,7 @@ def apply_to_graph(fname,graph=None,interp=True,ofile=None,interpolation_resolut
 
                 # Indices of edges in current branch
                 edgeinds = edges[np.sort(np.unique(edges,return_index=True)[1],kind='stable')]
+                #edgeinds = arr([x for x in edgeinds if filter[x]])
                 
                 # Array to store which edges are reversed
                 edgereverse = np.zeros(edges.shape[0],dtype='bool')
@@ -274,6 +280,7 @@ def apply_to_graph(fname,graph=None,interp=True,ofile=None,interpolation_resolut
                                 else:
                                     print('UNDEF:',count,j,ec0,ec1,edgereverse[j-1])
                                     breakpoint()
+                                    #rev = False
                                  
                                 edgereverse[j] = rev
                                 count += 1
@@ -418,39 +425,41 @@ def apply_to_graph(fname,graph=None,interp=True,ofile=None,interpolation_resolut
         print('Overlaying wriggle (by segment)...')
         
         for i,ec in enumerate(tqdm(edgeconn)):
-            inds = np.where(epi==i)
-            if len(inds[0])>5:
+            if filter[i]:
+                inds = np.where(epi==i)
+                if len(inds[0])>5:
 
-                branch0 = points[inds] # np.vstack([x0,x1,x2])
-                brads = radii[inds]
+                    branch0 = points[inds] # np.vstack([x0,x1,x2])
+                    brads = radii[inds]
 
-                length = np.linalg.norm(branch0[-1]-branch0[0])
+                    length = np.linalg.norm(branch0[-1]-branch0[0])
 
-                if np.mean(brads)>60.:
-                    period = length * 2.
-                    amplitude = np.mean(brads) * 10.    
-                else:
-                    period = length / 5.
-                    amplitude = np.mean(brads) * 10.
-                
-                branch0_int = branch0
-                branch0_sin,w1 = overlay_sine(branch0_int,amplitude=amplitude,period=period,tether_start=True,tether_end=True)
-                
-                new_points[inds[0]] = branch0_sin
-                
-                for j,scalar in enumerate(scalars):
-                    x0 = np.sum(nEdgePoint[:i])
-                    n = nEdgePoint[i]
-                    cur_data = scalar['data'][x0:x0+n]
-                    new_scalar_data[j,inds] = np.linspace(cur_data[0],cur_data[1],len(inds[0]))
-                
-                if False and np.all(branch0[:,0]>bboxx[0]) and np.all(branch0[:,0]<bboxx[1]) and np.all(branch0[:,1]>bboxy[0]) and np.all(branch0[:,1]<bboxy[1]):
-                    plt.plot(branch0_sin[:,0],branch0_sin[:,1],c='g')                    
+                    if np.mean(brads)>60.:
+                        period = length / 5. #* 2.
+                        amplitude = np.mean(brads) * 2. #np.random.uniform(1.5,2.5,brads.shape[0])
+                    else:
+                        period = length / 5.
+                        amplitude = np.mean(brads) * 2. #np.random.uniform(1.5,2.5,brads.shape[0])
+                    
+                    branch0_int = branch0
+                    branch0_sin,w1 = overlay_sine(branch0_int,amplitude=amplitude,period=period,tether_start=True,tether_end=True)
+                    
+                    new_points[inds[0]] = branch0_sin
+                    
+                    #for j,scalar in enumerate(scalars):
+                    #    x0 = np.sum(nEdgePoint[:i])
+                    #    n = nEdgePoint[i]
+                    #    cur_data = scalar['data'][x0:x0+n]
+                    #    new_scalar_data[j][inds] = np.linspace(cur_data[0],cur_data[1],len(inds[0]))
+                    
+                    if False and np.all(branch0[:,0]>bboxx[0]) and np.all(branch0[:,0]<bboxx[1]) and np.all(branch0[:,1]>bboxy[0]) and np.all(branch0[:,1]<bboxy[1]):
+                        plt.plot(branch0_sin[:,0],branch0_sin[:,1],c='g')                    
     
     graph.set_data(nodes,name='VertexCoordinates')
     graph.set_data(new_points,name='EdgePointCoordinates')
-    #for j,scalar in enumerate(scalars):
-    #    graph.set_data(new_scalar_data[j],name=scalar['name'])
+    #if new_scalar_data is not None:
+    #    for j,scalar in enumerate(scalars):
+    #        graph.set_data(new_scalar_data[j],name=scalar['name'])
         
     graph.set_definition_size('POINT',new_points.shape[0])
     graph.set_graph_sizes()

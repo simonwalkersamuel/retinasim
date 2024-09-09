@@ -1,3 +1,4 @@
+<a href="https://zenodo.org/doi/10.5281/zenodo.12188764"><img src="https://zenodo.org/badge/674607155.svg" alt="DOI"></a>
 # RetinaSim
 
 **Retinal layer and vasculature simulation**
@@ -26,6 +27,7 @@ RetinaSim relies on several libraries:
 2) Reanimate for 1D flow simulation (provided here as a submodule);
 3) RetinaGen for procedural modelling of blood vessel networks (provided here as a submodule);
 4) Pymira for creating and editing spatial graph structures in python (provided here as a submodule)
+5) CycleGAN for generative deep learning transformation between imaging modalities (provided here as a submodule)
 
 RetinaSim is under development and has so far only been installed and tested on Ubuntu (20.04.5)
 
@@ -74,5 +76,12 @@ python main.py /OUTPUT/DIRECTORY/
 for default operation
 
 ## Link to data
-Example simulation data referenced in the paper can be found here:  
+Example simulation data referenced in the paper can be found on FigShare and Dropbox via the links below:
+
+https://figshare.com/articles/dataset/sim00000000_zip/26364181
+
+DOI: 10.6084/m9.figshare.26364181 
+
+And
+
 https://www.dropbox.com/scl/fo/whwru5rmz8g7cr0h8ytg1/h?rlkey=ynbh2kdhe0pcvpfo6cypm9oc6&dl=0  
