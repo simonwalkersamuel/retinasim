@@ -1275,7 +1275,7 @@ class RetinaSurface():
                 noise = np.zeros(coords.shape[0])
                 for ii,crd in enumerate(coords):
                     for k,sc in enumerate(layer_noise_feature_size):
-                        noise[ii] += simplex_x.noise2d(crd[0]/sc,crd[1]/sc)
+                        noise[ii] += simplex_x.noise2(crd[0]/sc,crd[1]/sc)
             
                 noise = ((noise-noise.min()) * 2 / (noise.max()-noise.min())) - 1.
                 if i<len(surface_coords)-1:
@@ -1292,7 +1292,7 @@ class RetinaSurface():
                 noise = np.zeros(coords.shape[0])
                 for ii,crd in enumerate(coords):
                     for k,sc in enumerate(common_noise_feature_size):
-                        noise[ii] += simplex_x.noise2d(crd[0]/sc,crd[1]/sc) * common_noise_scale_factor[k]
+                        noise[ii] += simplex_x.noise2(crd[0]/sc,crd[1]/sc) * common_noise_scale_factor[k]
             
                 # Rescale between -1 and +1
                 #noise = ((noise-noise.min()) * 2 / (noise.max()-noise.min())) - 1.
