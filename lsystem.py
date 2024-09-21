@@ -1479,8 +1479,8 @@ def simulate_cco_seed(prefix='',params=None,max_cycles=10,path=None,plot=False,d
         eye_geom = eye
     cylinders = []
     
-    min_first_branch_length,max_first_branch_length = 0.,2500. # um
-    first_branch_length = np.clip(np.random.uniform(min_first_branch_length-100,max_first_branch_length),1.,None)
+    min_first_branch_length,max_first_branch_length = 1500.,2500. # um
+    first_branch_length = np.clip(np.random.uniform(min_first_branch_length,max_first_branch_length),1.,None)
 
     for quad in ['upper','lower']:
         for vessel in ['artery','vein']:
