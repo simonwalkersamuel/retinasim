@@ -108,7 +108,7 @@ def overlay_sine(coords,amplitude=1.,period=1.,w0=0.,tether_start=False,tether_e
     
     return  pts,w[-1]
     
-def apply_to_graph(fname,graph=None,interp=True,ofile=None,interpolation_resolution=10.,interp_radius_factor=None,afH=None,afL=None,pfH=None,pfL=None,filter=None):
+def apply_to_graph(fname,graph=None,interp=True,ofile=None,interpolation_resolution=10.,interp_radius_factor=None,afH=None,afL=None,pfH=None,pfL=None,filter=None,by_branch=True):
 
     if graph is None:
         graph = spatialgraph.SpatialGraph()
@@ -158,7 +158,7 @@ def apply_to_graph(fname,graph=None,interp=True,ofile=None,interpolation_resolut
     #new_scalar_data = [x['data'] for x in scalars]
     
     # Ideally overlay by branch, allowing deviations to pass through bifurcations uninterrupted
-    if branch is not None:
+    if branch is not None and by_branch==True:
         branch = branch.astype('int')
         order = order.astype('int')
         print(f'Overlaying wriggle (by branch). afH={afH},afL={afL},pfH={pfH},pfL={pfL}')

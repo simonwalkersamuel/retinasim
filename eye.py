@@ -28,7 +28,7 @@ class Eye(object):
 
         self.fovea_radius = 250. + np.random.normal(0.,20.) #350./2. # um https://en.wikipedia.org/wiki/Fovea_centralis#:~:text=The%20fovea%20is%20a%20depression,area%20without%20any%20blood%20vessels).
         self.macula_centre = self.fovea_centre
-        self.macula_radius = 2500. + np.random.normal(0.,200.)
+        self.macula_radius = 1250. + np.random.normal(0.,200.)
         
         # L-system variables
         self.T_branching_factor = 20. #0.2
