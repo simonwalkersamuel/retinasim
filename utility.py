@@ -425,102 +425,73 @@ def join_feeding_vessels(graph, offset=arr([-10.,-10.,-1000])):
     a_inlets = arr([a_inlet_node,a_inlet_node1])
     v_outlets = arr([v_outlet_node,v_outlet_node1])
     
-    def connect_ends(endpoint_nodes,graph,offset=arr([-10.,-10.,-1000])):
+    gv = spatialgraph.GVars(graph)
     
-        # Get standard fields and create copies for editing
-        nodecoords, edgeconn, edgepoints, nedgepoints, radius, category, mlp = get_graph_fields(graph)
-        radName = graph.get_radius_field()['name']
-        
-        a_coords = nodecoords[endpoint_nodes]
+    vtypes = [0,1]
+    sources = [a_inlets,v_outlets]
     
-        # Create arterial inlet node and edges connecting to original inlets
-        a0 = np.mean(a_coords,axis=0)
-        nodecoords_new = np.vstack([nodecoords,a0])
-        a_node_ind = nodecoords_new.shape[0]-1
-        a0start = a0 + offset
-        #print(a0)
-        #print(a0start)
-        nodecoords_new = np.vstack([nodecoords_new,a0start])
-        a_start_node_ind = nodecoords_new.shape[0]-1
-        
-        # Connect new start point to mean point between endnodes
-        edgeconn_new = np.vstack([edgeconn,[a_start_node_ind,a_node_ind]])
-        # Connect meanpoint to first endpoint 
-        edgeconn_new = np.vstack([edgeconn_new,[a_node_ind,endpoint_nodes[0]]])
-        # Connect meanpoint to second endpoint 
-        edgeconn_new = np.vstack([edgeconn_new,[a_node_ind,endpoint_nodes[1]]])
-        
-        #print([a_start_node_ind,a_node_ind])
-        #print([a_node_ind,endpoint_nodes[0]])
-        #print([a_node_ind,endpoint_nodes[1]])
-        
-        nedgepoints_new = np.concatenate([nedgepoints,[2]])
-        nedgepoints_new = np.concatenate([nedgepoints_new,[2]])
-        nedgepoints_new = np.concatenate([nedgepoints_new,[2]])
-        
-        edgepoints_new = np.vstack([edgepoints,[a0start]])
-        edgepoints_new = np.vstack([edgepoints_new,[a0]])
-        edgepoints_new = np.vstack([edgepoints_new,[a0]])
-        edgepoints_new = np.vstack([edgepoints_new,[nodecoords_new[endpoint_nodes[0]]]])
-        edgepoints_new = np.vstack([edgepoints_new,[a0]])
-        edgepoints_new = np.vstack([edgepoints_new,[nodecoords_new[endpoint_nodes[1]]]])
-        
-        # Get edges connected to existing endpoints
-        a1_edges = graph.get_edges_containing_node(endpoint_nodes[0])
-        a2_edges = graph.get_edges_containing_node(endpoint_nodes[1])
-        
-        # Makes sure they are true endpoints...
-        if len(a1_edges)!=1 or len(a2_edges)!=1:
-            print('Error, inlets are connected to more than one node!')
-            return graph
-        
-        # Reference the single edge connected to each endpoint        
-        edge1 = graph.get_edge(a1_edges[0])
-        edge2 = graph.get_edge(a2_edges[0])
-        
-        # Deal with point radii
-        rads1 = edge1.scalars[edge1.scalarNames.index(radName)]
-        rads2 = edge2.scalars[edge2.scalarNames.index(radName)]
-        new_rad = np.max(np.concatenate([rads1,rads2])) * 1.5
-        radius_new = np.concatenate([radius,[new_rad],[new_rad]])
-        new_rad = np.max(np.concatenate([rads1,rads2])) * 1.3
-        radius_new = np.concatenate([radius_new,[new_rad],[new_rad]])
-        radius_new = np.concatenate([radius_new,[new_rad],[new_rad]])
-        
-        # Deal with point category
-        cat1 = edge1.scalars[edge1.scalarNames.index('VesselType')]
-        new_cat = cat1[0]
-        category_new = np.concatenate([category,[new_cat],[new_cat]])
-        category_new = np.concatenate([category_new,[new_cat],[new_cat]])
-        category_new = np.concatenate([category_new,[new_cat],[new_cat]])
-        
-        mlp_new = category_new.copy()
-        
-        scalars = graph.get_scalars()
-        for i,sc1 in enumerate(edge1.scalars):
-            sc2 = edge2.scalars[i]
-            if edge1.scalarNames[i] not in [radName,'VesselType']:
-                if sc1.dtype in [np.float32,np.float64]:
-                    new_val = np.mean(sc1) + np.mean(sc2)
-                elif sc1.dtype in [np.int32,np.int64]:
-                    new_val = sc1[0]
-                else:
-                    breakpoint()
-                    
-                curField = [x for x in scalars if x['name']==edge1.scalarNames[i]][0]
-                data = curField['data']
-                data = np.concatenate([data,[new_val],[new_val]])
-                data = np.concatenate([data,[new_val],[new_val]])
-                data = np.concatenate([data,[new_val],[new_val]])
-                graph.set_data(data,name=curField['name'])
+    noffset = graph.nnode
+    for i in range(2):
+        if not any(sources[i]==None):
+            current_vt = vtypes[i]
+            
+            nodes = graph.get_data('VertexCoordinates')
+            a1 = np.mean(nodes[sources[i]],axis=0)
+            a0 = a1 + offset
+            
+            gv.add_node(a0)
+            gv.add_node(a1)
+
+            a1_edges = graph.get_edges_containing_node(sources[i][0])
+            a2_edges = graph.get_edges_containing_node(sources[i][1])
+            
+            # Makes sure they are true endpoints...
+            if len(a1_edges)!=1 or len(a2_edges)!=1:
+                print('Error, inlets are connected to more than one node!')
+                return graph
                 
-        graph = set_and_write_graph(graph, [nodecoords_new,edgeconn_new,edgepoints_new,nedgepoints_new,radius_new,category_new,mlp_new],None)
-        return graph
-    
-    if not any(a_inlets==None):
-        graph = connect_ends(a_inlets,graph,offset=offset)
-    if not any(v_outlets==None):        
-        graph = connect_ends(v_outlets,graph,offset=offset)
+            edge1 = graph.get_edge(a1_edges[0])
+            edge2 = graph.get_edge(a2_edges[0])
+                
+            scnames = [x['name'] for x in graph.get_scalars()]
+            sctype = [x['name'] for x in graph.get_scalars()]
+            radname = graph.get_radius_field_name()
+            radInd = scnames.index(radname)
+            if 'VesselType' in scnames:
+                vtInd = scnames.index('VesselType')
+            else:
+                vtInd = None
+            if 'EdgeLabel' in scnames:
+                elInd = scnames.index('EdgeLabel')
+            else:
+                elInd = None
+            rads1 = edge1.scalars[radInd]
+            rads2 = edge2.scalars[radInd]
+            
+            # Add a new root segment
+            new_rad = np.max(np.concatenate([rads1,rads2])) * 1.5       
+            new_scalar_vals = [0. for _ in range(len(gv.scalars))]
+            new_scalar_vals[radInd] = new_rad
+            if vtInd is not None:
+                new_scalar_vals[vtInd] = current_vt
+            if elInd is not None:
+                new_scalar_vals[elInd] = graph.unique_edge_label()    
+            gv.add_edge(noffset,noffset+1,new_scalar_vals)
+            
+            # Add edges connecting new root segment to old inlets
+            new_rad = np.max(np.concatenate([rads1,rads2])) * 1.3      
+            new_scalar_vals = [0. for _ in range(len(gv.scalars))]
+            new_scalar_vals[radInd] = new_rad
+            if vtInd is not None:
+                new_scalar_vals[vtInd] = current_vt
+            if elInd is not None:
+                new_scalar_vals[elInd] = graph.unique_edge_label()  
+            gv.add_edge(noffset+1,sources[i][0],new_scalar_vals)   
+            gv.add_edge(noffset+1,sources[i][1],new_scalar_vals)               
+            
+            noffset += 2
+        
+    gv.set_in_graph()
 
     return graph  
     
